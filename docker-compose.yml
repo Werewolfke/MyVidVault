@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    shm_size: 1g
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: ./api
+    command: uvicorn api.asgi:application --host 0.0.0.0 --port 8000
+    volumes:
+      - ./api:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:1.25
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - static_volume:/app/staticfiles             # the same volume
+      - media_volume:/app/media
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
