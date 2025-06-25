@@ -13,11 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='profile',
-            name='is_verified',
-            field=models.BooleanField(default=False),
-        ),
         migrations.AlterField(
             model_name='profile',
             name='default_bookmark_collection',

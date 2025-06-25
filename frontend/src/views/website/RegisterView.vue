@@ -1,5 +1,4 @@
 <template>
-  <div class="max-w-md mx-auto mt-10">
     <!-- Success notification banner -->
     <div v-if="registrationSuccess" class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-md">
       <div class="flex">
@@ -85,7 +84,6 @@
         </button>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>

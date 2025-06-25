@@ -32,7 +32,17 @@ const routes = [
   { path: '/login', name: 'login', component: LoginView },
   { path: '/privacy', name: 'privacy', component: PrivacyView },
   { path: '/register', name: 'register', component: RegisterView },
-  { path: '/reset-password/:uid/:token', name: 'reset-password-confirm', component: ResetPasswordConfirmView },
+  {
+    path: '/reset-password/:uidb64/:token',
+    name: 'reset-password-confirm',
+    component: ResetPasswordConfirmView,
+    props: true,
+  },
+  {
+    path: '/reset-password-confirm',
+    name: 'reset-password-confirm-query',
+    component: ResetPasswordConfirmView,
+  },
   { path: '/terms', name: 'terms', component: TermsView },
   {
     path: '/users/:username',

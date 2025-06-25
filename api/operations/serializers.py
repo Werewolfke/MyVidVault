@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from users.models import Bookmark
 from operations.models import Video  # adjust import if needed
+from django.core.files.storage import default_storage
+from django.conf import settings
 
 User = get_user_model()
 
@@ -16,8 +18,13 @@ class UserPublicSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         profile = getattr(obj, 'profile', None)
         if profile and getattr(profile, 'avatar', None):
-            return profile.avatar.url
-        return '/media/default.jpg'
+            avatar_url = profile.avatar.url
+            # Check if file exists
+            avatar_path = profile.avatar.name
+            if default_storage.exists(avatar_path):
+                return avatar_url
+        # Return your default image URL
+        return settings.MEDIA_URL + 'default.jpg'
 
     def get_bio(self, obj):
         profile = getattr(obj, 'profile', None)
@@ -55,9 +62,12 @@ class HomePageBookmarkSerializer(serializers.ModelSerializer):
 
     def get_user_avatar_url(self, obj):
         profile = getattr(obj.user, 'profile', None)
-        if profile and profile.avatar:
-            return profile.avatar.url
-        return '/media/default.jpg'
+        if profile and getattr(profile, 'avatar', None):
+            avatar_url = profile.avatar.url
+            avatar_path = profile.avatar.name
+            if default_storage.exists(avatar_path):
+                return avatar_url
+        return settings.MEDIA_URL + 'default.jpg'
 
 class VideoDetailSerializer(serializers.ModelSerializer):
     class Meta:

@@ -94,3 +94,13 @@ export const updateMyProfile = async (formData) => {
   return response.data;
 };
 
+export const requestPasswordReset = async (email) => {
+  return axios.post(`${API_BASE_URL}/auth/password-reset/`, { email });
+};
+
+export const confirmPasswordReset = async ({ uidb64, token, new_password1, new_password2 }) => {
+  return axios.post(`${API_BASE_URL}/auth/password-reset-confirm/`, {
+    uidb64, token, new_password1, new_password2
+  });
+};
+

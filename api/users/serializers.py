@@ -3,6 +3,8 @@ from users.models import Profile, Collection, Channel, Bookmark, Follow
 from operations.models import Tag
 from django.contrib.auth.models import User
 from operations.models import Video  # adjust import as needed
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 class BookmarkSerializer(serializers.ModelSerializer):
     channel = serializers.PrimaryKeyRelatedField(
@@ -60,7 +62,6 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     username = serializers.CharField(source='user.username', read_only=True)
     avatar_url = serializers.SerializerMethodField()
-    is_verified = serializers.SerializerMethodField()
 
     # Add writable fields for PATCH
     bio = serializers.CharField(allow_blank=True, required=False)
@@ -69,11 +70,11 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            'username', 'bio', 'avatar', 'avatar_url', 'is_verified',
+            'username', 'bio', 'avatar', 'avatar_url',
             'collections', 'followers_count', 'following_count',
             'bookmarks_count', 'likes_count'
         ]
-        read_only_fields = ['username', 'avatar_url', 'is_verified', 'collections', 'followers_count', 'following_count', 'bookmarks_count', 'likes_count']
+        read_only_fields = ['username', 'avatar_url', 'collections', 'followers_count', 'following_count', 'bookmarks_count', 'likes_count']
 
     def get_collections(self, obj):
         collections = Collection.objects.filter(user=obj.user)
@@ -94,14 +95,18 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
 
     def get_avatar_url(self, obj):
         request = self.context.get('request')
+        # Check if avatar exists and file is present
         if obj.avatar and hasattr(obj.avatar, 'url'):
-            if request is not None:
-                return request.build_absolute_uri(obj.avatar.url)
-            return obj.avatar.url
-        return None
-
-    def get_is_verified(self, obj):
-        return getattr(obj, 'is_verified', False)
+            avatar_path = obj.avatar.name
+            if default_storage.exists(avatar_path):
+                if request is not None:
+                    return request.build_absolute_uri(obj.avatar.url)
+                return obj.avatar.url
+        # Return a default image URL (absolute if possible)
+        default_url = settings.MEDIA_URL + 'default.jpg'
+        if request is not None:
+            return request.build_absolute_uri(default_url)
+        return default_url
 
     def update(self, instance, validated_data):
         # Handle avatar update
@@ -145,8 +150,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_avatar_url(self, obj):
         request = self.context.get('request')
+        # Check if avatar exists and file is present
         if obj.avatar and hasattr(obj.avatar, 'url'):
-            if request is not None:
-                return request.build_absolute_uri(obj.avatar.url)
-            return obj.avatar.url
-        return None
+            avatar_path = obj.avatar.name
+            if default_storage.exists(avatar_path):
+                if request is not None:
+                    return request.build_absolute_uri(obj.avatar.url)
+                return obj.avatar.url
+        # Return a default image URL (absolute if possible)
+        default_url = settings.MEDIA_URL + 'default.jpg'
+        if request is not None:
+            return request.build_absolute_uri(default_url)
+        return default_url

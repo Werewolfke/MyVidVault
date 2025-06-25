@@ -1,5 +1,4 @@
 <template>
-  <div class="max-w-md mx-auto mt-10">
     <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
     <form @submit.prevent="handleLogin" class="space-y-4">
       <div>
@@ -27,7 +26,6 @@
         Don't have an account? <router-link :to="{ name: 'register' }" class="text-indigo-600 hover:underline">Register here</router-link>
       </div>
     </form>
-  </div>
 </template>
 
 <script setup>
