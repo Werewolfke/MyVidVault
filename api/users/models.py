@@ -185,6 +185,7 @@ class Bookmark(models.Model):
         ordering = ['-created_at']
         unique_together = ('user', 'channel', 'video')
         indexes = [
+            models.Index(fields=['-created_at'], name='bm_created_at_desc_idx'),
             models.Index(fields=['video', 'access', 'created_at'], name='bm_vid_acc_crt_idx'),
             models.Index(fields=['user', 'created_at'], name='bm_usr_crt_idx'),
             models.Index(fields=['access', 'created_at'], name='bm_acc_crt_idx'),

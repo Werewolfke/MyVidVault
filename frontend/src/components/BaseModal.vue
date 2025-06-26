@@ -7,11 +7,11 @@
       @click.self="close"
     >
       <div
-        class="bg-white/70 dark:bg-gray-900/70 rounded-lg shadow-lg p-6 w-full max-w-md relative border border-white/30 dark:border-gray-700/40"
+        class="bg-white/70 rounded-lg shadow-lg p-6 w-full max-w-md relative border border-white/30 dark:bg-gray-800/70 dark:border-gray-600"
         style="backdrop-filter: blur(24px) saturate(180%) brightness(1.1);"
       >
         <button
-          class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+          class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-500"
           @click="close"
           aria-label="Close"
         >

@@ -8,9 +8,9 @@ from users.views import (
     MyCollectionsListView,
     CollectionChannelsListView,
     BookmarkCreateAPIView,
-    MyProfileView,
+    MyProfileView,ToggleFollowView,
 )
-from videos.views import ManualBookmarkCreateView
+from videos.views import ManualBookmarkCreateView, VideoLikeToggleView,UsersWhoBookmarkedView, VideoLikeStatusView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +30,12 @@ urlpatterns = [
     path('api/collections/<int:collection_id>/channels/', CollectionChannelsListView.as_view(), name='collection-channels'),
 
     path('api/profile/<str:username>/', UserProfileView.as_view(), name='user-profile'),
+
+    # New URL for liking/unliking videos
+    path('api/videos/<int:video_id>/like/', VideoLikeToggleView.as_view(), name='video-like-toggle'),
+    path('api/videos/<int:video_id>/like-status/', VideoLikeStatusView.as_view(), name='video-like-status'),
+    path('api/videos/<int:video_id>/users-bookmarked/', UsersWhoBookmarkedView.as_view(), name='users-who-bookmarked'),
+    path('api/users/<int:user_id>/toggle-follow/', ToggleFollowView.as_view(), name='toggle-follow'),
+
 ]
 

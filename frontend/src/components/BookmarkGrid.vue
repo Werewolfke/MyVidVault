@@ -6,19 +6,20 @@
         v-model="searchQuery"
         type="text"
         placeholder="Search by title, description, or tag..."
-        class="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+        class="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
       />
-      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Search</button>
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">Search</button>
     </form>
+
     <!-- Loading skeleton -->
     <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 animate-fade-in">
       <div
         v-for="n in 8"
         :key="n"
-        class="rounded-lg bg-gradient-to-br from-gray-200/80 via-gray-100/80 to-gray-300/80 dark:from-gray-800/80 dark:via-gray-900/80 dark:to-gray-700/80 shadow border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden min-h-[180px]"
+        class="rounded-lg bg-gradient-to-br from-gray-200/80 via-gray-100/80 to-gray-300/80 shadow border border-gray-200 dark:border-gray-700 dark:from-gray-700 dark:via-gray-800 dark:to-gray-900 flex flex-col overflow-hidden min-h-[180px]"
       >
-        <div class="aspect-video bg-gradient-to-r from-indigo-100 via-indigo-200 to-indigo-300 dark:from-indigo-900 dark:via-indigo-800 dark:to-indigo-700 animate-pulse"></div>
-        <div class="h-4 w-2/3 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mt-2 mx-4"></div>
+        <div class="aspect-video bg-gradient-to-r from-indigo-100 via-indigo-200 to-indigo-300 animate-pulse dark:from-indigo-900 dark:via-indigo-800 dark:to-indigo-700"></div>
+        <div class="h-4 w-2/3 bg-gray-300 rounded animate-pulse mt-2 mx-4 dark:bg-gray-700"></div>
       </div>
     </div>
 
@@ -28,25 +29,25 @@
         v-for="bookmark in bookmarks"
         :key="bookmark.id"
         :to="{ name: 'bookmark-detail', params: { id: bookmark.id } }"
-        class="group rounded-lg bg-white/90 dark:bg-gray-900/80 shadow border border-gray-200 dark:border-gray-800 flex flex-col transition hover:shadow-lg overflow-hidden relative"
+        class="group rounded-lg bg-white/90 shadow border border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex flex-col transition hover:shadow-lg overflow-hidden relative"
       >
+        <!-- Video Thumbnail -->
         <div class="relative aspect-video bg-gray-200 dark:bg-gray-700">
           <img
             :src="bookmark.thumbnail_url"
             :alt="bookmark.title"
             class="object-cover w-full h-full transition-transform duration-200 group-hover:scale-105"
           />
-          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/30">
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40">
             <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
             </svg>
           </div>
         </div>
         <div class="p-2 flex-1 flex flex-col">
-          <h2 class="font-semibold text-xs mb-1 line-clamp-2">{{ bookmark.title }}</h2>
+          <h2 class="font-semibold text-xs mb-1 line-clamp-2 text-gray-800 dark:text-gray-200">{{ bookmark.title }}</h2>
           <div class="flex items-center gap-2 mt-auto">
-            <img :src="bookmark.user_avatar_url" class="h-5 w-5 rounded-full object-cover border border-blue-100 dark:border-blue-900/40" />
-            <span class="text-xs truncate max-w-[80px]">{{ bookmark.user_username }}</span>
+            <span class="text-xs truncate max-w-[80px] text-gray-600 dark:text-gray-400">{{ bookmark.user_username }}</span>
           </div>
         </div>
       </router-link>
@@ -55,15 +56,15 @@
     <!-- Pagination -->
     <div v-if="showPagination" class="mt-8 flex flex-row flex-wrap justify-center items-center gap-2">
       <button
-        class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md shadow-sm text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-600"
+        class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md shadow-sm text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
         :disabled="currentPage === 1"
         @click="goToPreviousPage"
       >
         Previous
       </button>
-      <span class="text-sm text-gray-600 dark:text-gray-400 px-1">Page {{ currentPage }} of {{ totalPages }}</span>
+      <span class="text-sm text-gray-600 px-1 dark:text-gray-400">Page {{ currentPage }} of {{ totalPages }}</span>
       <button
-        class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md shadow-sm text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-600"
+        class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md shadow-sm text-sm font-medium hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
         :disabled="currentPage === totalPages"
         @click="goToNextPage"
       >
@@ -124,17 +125,28 @@ function goToPreviousPage() {
   if (props.currentPage > 1) emit('update:page', props.currentPage - 1)
 }
 function goToNextPage() {
-  if (props.currentPage < totalPages.value) emit('update:page', props.currentPage + 1)
+  if (props.currentPage < totalPages.value) {
+    emit('update:page', props.currentPage + 1); // Emit the next page number
+  }
 }
 
 onMounted(loadBookmarks)
-watch(() => [props.currentPage, props.filters], loadBookmarks, { deep: true })
+watch(() => [props.currentPage, props.filters], loadBookmarks, { deep: true });
 </script>
 
 <style scoped>
 .aspect-video {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 9; /* Ensures 16:9 aspect ratio */
+  overflow: hidden; /* Prevents content from overflowing */
+  position: relative; /* Ensures child elements are positioned correctly */
 }
+
+img {
+  object-fit: cover; /* Ensures the image fills the container while maintaining aspect ratio */
+  width: 100%; /* Ensures the image spans the full width of the container */
+  height: 100%; /* Ensures the image spans the full height of the container */
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

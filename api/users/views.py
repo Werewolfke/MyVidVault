@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
 from users.serializers import UserProfileDetailSerializer, BookmarkSerializer, UserProfileSerializer
-from .models import Collection, Channel
+from .models import Collection, Channel, Follow, User
 from .serializers import CollectionSerializer, ChannelSerializer
 from operations.models import Video
 
@@ -71,3 +71,23 @@ class MyProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+class ToggleFollowView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        try:
+            target_user = User.objects.get(id=user_id)
+            if target_user == request.user:
+                return Response({"error": "You cannot follow yourself."}, status=400)
+
+            follow, created = Follow.objects.get_or_create(follower=request.user, followed=target_user)
+            if not created:
+                follow.delete()
+                is_followed = False
+            else:
+                is_followed = True
+
+            return Response({"is_followed": is_followed})
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=404)

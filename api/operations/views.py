@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models import Q, Case, When, OuterRef, Subquery, Max
+from django.db.models import Q, Case, When, OuterRef, Subquery, Max, Min, Count
 from rest_framework import generics
 from users.models import Bookmark, Follow
 from .serializers import HomePageBookmarkSerializer, BookmarkDetailSerializer
@@ -18,24 +18,29 @@ class BookmarkListAPIView(generics.ListAPIView):
     def get_queryset(self):
         """
         Builds the queryset for bookmarks based on query parameters.
+        Ensures only one bookmark per video is returned.
         """
-        # Start with a base queryset with optimized related object fetching
-        queryset = Bookmark.objects.select_related(
-            'user',
-            'user__profile',
-            'channel',
-            'channel__collection',
-            'video'
-        ).prefetch_related('tags')
+        # Prefetch the video's tags for efficiency
+        base_queryset = Bookmark.objects.select_related(
+            'user', 'user__profile', 'channel', 'channel__collection', 'video'
+        ).prefetch_related('video__tags')
 
-        queryset = self._apply_filters(queryset)
+        # Apply filters before grouping
+        queryset = self._apply_filters(base_queryset)
         queryset = self._apply_search(queryset)
-        queryset = self._apply_sorting(queryset)
 
-        return queryset
+        # Group by video and select the earliest bookmark for each video
+        grouped_queryset = queryset.values('video').annotate(
+            first_bookmark_id=Min('id')
+        ).values_list('first_bookmark_id', flat=True)
+
+        # Filter the queryset to include only the grouped bookmarks
+        queryset = queryset.filter(id__in=grouped_queryset)
+
+        return self._apply_sorting(queryset)
 
     def _apply_filters(self, queryset):
-        """Applies filters for orientation, user, and liked_by."""
+        """Applies filters for orientation, user, liked_by, following, and tags."""
         orientation = self.request.query_params.get('orientation')
         if orientation and orientation != 'all':
             queryset = queryset.filter(video__orientation=orientation)
@@ -56,7 +61,12 @@ class BookmarkListAPIView(generics.ListAPIView):
             followed_users = Follow.objects.filter(follower=self.request.user).values_list('followed_id', flat=True)
             queryset = queryset.filter(user_id__in=followed_users)
 
-        return queryset
+        tag_param = self.request.query_params.get('tag')
+        if tag_param:
+            # Filter on the video's tags
+            queryset = queryset.filter(video__tags__name__iexact=tag_param)
+
+        return queryset.distinct()
 
     def _apply_search(self, queryset):
         """Applies a search filter across multiple fields."""
@@ -66,20 +76,25 @@ class BookmarkListAPIView(generics.ListAPIView):
                 Q(title__icontains=search) |
                 Q(description__icontains=search) |
                 Q(video__title__icontains=search) |
-                Q(tags__name__icontains=search)
-            ).distinct()
-        return queryset
+                Q(video__tags__name__icontains=search)
+            )
+        return queryset.distinct()
 
     def _apply_sorting(self, queryset):
         """Applies sorting based on the 'sort' query parameter."""
         sort_param = self.request.query_params.get('sort', 'all')
 
-        if sort_param == 'random':
-            # simplified random ordering
-            return queryset.order_by('?')
+        if sort_param == 'popular':
+            queryset = queryset.annotate(
+                bookmark_count=Count('id'),
+                like_count=Count('video__likes')
+            ).order_by('-bookmark_count', '-like_count')
+        elif sort_param == 'random':
+            queryset = queryset.order_by('?')
+        else:
+            queryset = queryset.order_by('-created_at')
 
-        # Default sort: 'all', latest bookmarks first.
-        return queryset.order_by('-created_at')
+        return queryset
 
 
 class BookmarkDetailAPIView(generics.RetrieveAPIView):

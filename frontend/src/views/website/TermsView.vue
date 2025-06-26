@@ -1,6 +1,6 @@
 <template>
-    <h1 class="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-300 text-center">MyVidVault Terms of Service</h1>
-    <div class="prose dark:prose-invert max-w-none">
+    <h1 class="text-3xl font-bold mb-8 text-blue-700 text-center dark:text-blue-300">MyVidVault Terms of Service</h1>
+    <div class="prose max-w-none text-gray-800 dark:text-gray-200">
       <section class="mb-6">
         <p>
           Welcome to <strong>MyVidVault</strong>, a video bookmarking platform ("MyVidVault", "we", "us", or "our"). By using our website, mobile application, and related services (collectively, the “Platform”), you agree to these Terms of Service ("Terms"). If you do not agree, you may not use the Platform.
@@ -11,14 +11,14 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">1. Modifications to Terms and Platform</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">1. Modifications to Terms and Platform</h2>
         <p>
           We reserve the right to change these Terms or modify the Platform at any time. Updates will be posted here or otherwise communicated. Continued use of the Platform after changes means you accept the revised Terms.
         </p>
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">2. Description of Service</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">2. Description of Service</h2>
         <p>
           MyVidVault allows users to collect, bookmark, organize, and share links to third-party video content hosted externally. MyVidVault does not host or stream any video files on its servers.
         </p>
@@ -76,7 +76,7 @@
           MyVidVault respects copyright law and complies with the Digital Millennium Copyright Act (DMCA). If you believe content linked on our platform infringes your copyright, please submit a proper takedown notice to:
         </p>
         <p>
-          Email: <a href="mailto:myvidvault506@gmail.com" class="text-blue-600 dark:text-blue-400">myvidvault506@gmail.com</a>
+          Email: <a href="mailto:myvidvault506@gmail.com" class="text-blue-600 ">myvidvault506@gmail.com</a>
         </p>
         <p>
           We will investigate and may remove the material or disable access in response.
@@ -149,15 +149,15 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">15. Governing Law</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">15. Governing Law</h2>
         <p>
           These Terms are governed by the laws of the State of <span class="italic">[Insert State]</span>, without regard to conflict of law principles. Any disputes will be resolved in the state or federal courts located in <span class="italic">[Insert Jurisdiction]</span>.
         </p>
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">16. General Provisions</h2>
-        <ul class="list-disc pl-6">
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">16. General Provisions</h2>
+        <ul class="list-disc pl-6 text-gray-800 dark:text-gray-200">
           <li>These Terms represent the entire agreement between you and MyVidVault;</li>
           <li>If any provision is held invalid, the remaining terms remain enforceable;</li>
           <li>We may assign our rights under these Terms without notice to you.</li>
@@ -165,7 +165,7 @@
       </section>
 
       <section>
-        <h2 class="text-2xl font-semibold mt-8 mb-2">17. Contact</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">17. Contact</h2>
         <p>
           For questions or concerns, contact:<br>
           Email: <a href="mailto:myvidvault506@gmail.com" class="text-blue-600 dark:text-blue-400">myvidvault506@gmail.com</a>

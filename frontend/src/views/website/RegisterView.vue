@@ -1,16 +1,16 @@
 <template>
     <!-- Success notification banner -->
-    <div v-if="registrationSuccess" class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-md">
+    <div v-if="registrationSuccess" class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-md dark:bg-green-900 dark:border-green-700">
       <div class="flex">
         <div class="flex-shrink-0">
           <!-- Success icon -->
-          <svg class="h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <svg class="h-6 w-6 text-green-500 dark:text-green-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
           </svg>
         </div>
         <div class="ml-3">
-          <h3 class="text-lg font-medium text-green-800">Registration successful!</h3>
-          <div class="mt-2 text-green-700">
+          <h3 class="text-lg font-medium text-green-800 dark:text-green-300">Registration successful!</h3>
+          <div class="mt-2 text-green-700 dark:text-green-400">
             <p v-if="autoLoginSuccessful" class="text-base">
               Your account has been created and you're now logged in!
               <span class="block mt-2 font-semibold">
@@ -27,33 +27,61 @@
 
     <!-- Registration form section -->
     <div v-if="!registrationSuccess">
-      <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
+      <h1 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Register</h1>
       
       <form @submit.prevent="handleRegister" class="space-y-4">
         <div>
-          <label for="username" class="block text-sm font-medium">Username</label>
-          <input type="text" id="username" v-model="username" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+          <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+          <input
+            type="text"
+            id="username"
+            v-model="username"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          />
         </div>
         <div>
-          <label for="email" class="block text-sm font-medium">Email</label>
-          <input type="email" id="email" v-model="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <input
+            type="email"
+            id="email"
+            v-model="email"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          />
         </div>
         <div>
-          <label for="password" class="block text-sm font-medium">Password</label>
-          <input type="password" id="password" v-model="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          />
         </div>
         <div>
-          <label for="password2" class="block text-sm font-medium">Confirm Password</label>
-          <input type="password" id="password2" v-model="password2" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+          <label for="password2" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
+          <input
+            type="password"
+            id="password2"
+            v-model="password2"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          />
         </div>
-        <div v-if="error && errorMessages.length > 0" class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
+        <div v-if="error && errorMessages.length > 0" class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4 dark:bg-red-900 dark:border-red-700 dark:text-red-300" role="alert">
           <strong class="font-bold">Registration error:</strong>
           <ul class="mt-2 list-disc list-inside">
             <li v-for="(msg, index) in errorMessages" :key="index">{{ msg }}</li>
           </ul>
         </div>
         <div>
-          <button type="submit" :disabled="loading" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          >
             <span v-if="loading" class="inline-flex items-center">
               <!-- Loading spinner -->
               <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -65,8 +93,8 @@
             <span v-else>Register</span>
           </button>
         </div>
-        <div class="text-center text-sm">
-          Already have an account? <router-link :to="{ name: 'login' }" class="text-indigo-600 hover:underline">Login here</router-link>
+        <div class="text-center text-sm text-gray-700 dark:text-gray-300">
+          Already have an account? <router-link :to="{ name: 'login' }" class="text-indigo-600 hover:underline dark:text-indigo-400">Login here</router-link>
         </div>
       </form>
     </div>

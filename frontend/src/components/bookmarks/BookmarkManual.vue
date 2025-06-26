@@ -1,25 +1,58 @@
 <template>
   <div>
-    <form @submit.prevent="handleSubmit" class="bg-white dark:bg-gray-800 p-6 rounded shadow space-y-6">
+    <form @submit.prevent="handleSubmit" class="bg-white p-6 rounded shadow space-y-6 dark:bg-gray-800 dark:border-gray-700">
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="video-source-url">Source URL</label>
-        <input class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" type="url" id="video-source-url" v-model="videoData.source_url" placeholder="https://example.com/video.mp4" required>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="video-source-url">Source URL</label>
+        <input
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+          type="url"
+          id="video-source-url"
+          v-model="videoData.source_url"
+          placeholder="https://example.com/video.mp4"
+          required
+        />
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="video-thumbnail-url">Thumbnail URL</label>
-        <input class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" type="url" id="video-thumbnail-url" v-model="videoData.thumbnail_url" placeholder="https://example.com/thumbnail.jpg" required>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="video-thumbnail-url">Thumbnail URL</label>
+        <input
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+          type="url"
+          id="video-thumbnail-url"
+          v-model="videoData.thumbnail_url"
+          placeholder="https://example.com/thumbnail.jpg"
+          required
+        />
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="video-embed-url">Embed URL</label>
-        <input class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" type="url" id="video-embed-url" v-model="videoData.embed_url" placeholder="https://example.com/embed/video" required>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="video-embed-url">Embed URL</label>
+        <input
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+          type="url"
+          id="video-embed-url"
+          v-model="videoData.embed_url"
+          placeholder="https://example.com/embed/video"
+          required
+        />
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="video-title">Video Title</label>
-        <input class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" type="text" id="video-title" v-model="videoData.title" placeholder="Title of the video" required>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="video-title">Video Title</label>
+        <input
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+          type="text"
+          id="video-title"
+          v-model="videoData.title"
+          placeholder="Title of the video"
+          required
+        />
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="video-orientation">Orientation</label>
-        <select class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" id="video-orientation" v-model="videoData.orientation" required>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="video-orientation">Orientation</label>
+        <select
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          id="video-orientation"
+          v-model="videoData.orientation"
+          required
+        >
           <option :value="null" disabled>-- Select Orientation --</option>
           <option v-for="choice in videoOrientationChoices" :key="choice.value" :value="choice.value">
             {{ choice.label }}
@@ -27,12 +60,23 @@
         </select>
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="tags">Tags (comma-separated)</label>
-        <input class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" type="text" id="tags" v-model="tagsInput" placeholder="tag1, tag2, another tag">
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="tags">Tags (comma-separated)</label>
+        <input
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+          type="text"
+          id="tags"
+          v-model="tagsInput"
+          placeholder="tag1, tag2, another tag"
+        />
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="bookmark-collection">Collection</label>
-        <select class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" id="bookmark-collection" v-model="selectedCollectionId" required>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="bookmark-collection">Collection</label>
+        <select
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          id="bookmark-collection"
+          v-model="selectedCollectionId"
+          required
+        >
           <option :value="null" disabled>-- Select Collection --</option>
           <option v-for="collection in userCollections" :key="collection.id" :value="collection.id">
             {{ collection.name }}
@@ -40,8 +84,14 @@
         </select>
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="bookmark-channel">Channel</label>
-        <select class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" id="bookmark-channel" v-model="bookmarkData.channel" required :disabled="!selectedCollectionId">
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="bookmark-channel">Channel</label>
+        <select
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          id="bookmark-channel"
+          v-model="bookmarkData.channel"
+          required
+          :disabled="!selectedCollectionId"
+        >
           <option :value="null" disabled>-- Select Channel --</option>
           <option v-for="channel in userChannels" :key="channel.id" :value="channel.id">
             {{ channel.name }}
@@ -49,18 +99,32 @@
         </select>
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="bookmark-description">Description</label>
-        <textarea class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" id="bookmark-description" v-model="bookmarkData.description" rows="3"></textarea>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="bookmark-description">Description</label>
+        <textarea
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          id="bookmark-description"
+          v-model="bookmarkData.description"
+          rows="3"
+        ></textarea>
       </div>
       <div>
-        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-200" for="bookmark-access">Access</label>
-        <select class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:bg-gray-700 dark:text-white" id="bookmark-access" v-model="bookmarkData.access" required>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300" for="bookmark-access">Access</label>
+        <select
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          id="bookmark-access"
+          v-model="bookmarkData.access"
+          required
+        >
           <option v-for="choice in bookmarkAccessChoices" :key="choice.value" :value="choice.value">
             {{ choice.label }}
           </option>
         </select>
       </div>
-      <button type="submit" class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow" :disabled="isSubmitting">
+      <button
+        type="submit"
+        class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+        :disabled="isSubmitting"
+      >
         {{ isSubmitting ? 'Saving...' : 'Save Bookmark & Video' }}
       </button>
     </form>
@@ -96,9 +160,11 @@ const bookmarkData = reactive({
 const tagsInput = ref('')
 
 const videoOrientationChoices = [
-  { value: 'landscape', label: 'Landscape' },
-  { value: 'portrait', label: 'Portrait' },
-  { value: 'square', label: 'Square' },
+  { value: 'straight', label: 'Straight' },
+  { value: 'gay', label: 'Gay' },
+  { value: 'bi', label: 'Bi' },
+  { value: 'trans', label: 'Trans' },
+  { value: 'sfw', label: 'SFW' },
 ]
 
 const bookmarkAccessChoices = [
@@ -211,7 +277,7 @@ h2 { /* Style the new h2 */
 }
 
 fieldset {
-  border: 1px solid #ddd; /* Consider Tailwind borders: border border-gray-300 dark:border-gray-600 */
+  border: 1px solid #ddd; /* Consider Tailwind borders: border border-gray-300  */
   padding: 15px; /* Tailwind: p-4 */
   margin-bottom: 20px; /* Tailwind: mb-5 */
   border-radius: 4px; /* Tailwind: rounded */
@@ -219,7 +285,7 @@ fieldset {
 
 legend {
   font-weight: bold; /* Tailwind: font-semibold */
-  color: #555; /* Tailwind: text-gray-700 dark:text-gray-300 */
+  color: #555; /* Tailwind: text-gray-700  */
   padding: 0 5px; /* Tailwind: px-1 */
 }
 
@@ -231,7 +297,7 @@ label {
   display: block; /* Tailwind: block */
   margin-bottom: 5px; /* Tailwind: mb-1.5 */
   font-weight: 500; /* Tailwind: font-medium */
-  color: #444; /* Tailwind: text-gray-700 dark:text-gray-300 */
+  color: #444; /* Tailwind: text-gray-700  */
 }
 
 /* Apply Tailwind classes directly in template or use @apply here */
@@ -240,7 +306,7 @@ input[type="url"],
 textarea,
 select {
   /* Example using Tailwind classes (apply in template for better practice) */
-  /* @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500; */
+  /* @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm       */
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -261,7 +327,7 @@ small {
     display: block;
     margin-top: 4px; /* Tailwind: mt-1 */
     font-size: 0.85em; /* Tailwind: text-xs */
-    color: #666; /* Tailwind: text-gray-500 dark:text-gray-400 */
+    color: #666; /* Tailwind: text-gray-500  */
 }
 
 button[type="submit"] {
@@ -290,7 +356,7 @@ button[type="submit"]:disabled {
 
 .error-message {
   /* Example using Tailwind classes */
-  /* @apply mt-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700/50 rounded p-3 text-center mb-4; */
+  /* @apply mt-2 text-sm text-red-600  bg-red-50  border border-red-200  rounded p-3 text-center mb-4; */
   color: #dc3545;
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
@@ -304,7 +370,7 @@ button[type="submit"]:disabled {
 
 .success-message {
    /* Example using Tailwind classes */
-  /* @apply mt-2 text-sm text-green-600 dark:text-green-300 bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-700/50 rounded p-3 text-center mb-4; */
+  /* @apply mt-2 text-sm text-green-600  bg-green-50  border border-green-200  rounded p-3 text-center mb-4; */
   color: #155724;
   background-color: #d4edda;
   border: 1px solid #c3e6cb;

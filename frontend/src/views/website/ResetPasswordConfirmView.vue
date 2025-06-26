@@ -1,43 +1,61 @@
 <template>
-    <h1 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Reset Password</h1>
-    <form v-if="!successMessage && displayForm" @submit.prevent="handleResetPassword" class="space-y-4">
-      <div>
-        <label for="new_password1" class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
-        <input type="password" id="new_password1" v-model="newPassword1" required
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
-        <p v-if="errors.new_password1" class="text-red-500 text-xs mt-1">{{ errors.new_password1.join(', ') }}</p>
-      </div>
-      <div>
-        <label for="new_password2" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm New Password</label>
-        <input type="password" id="new_password2" v-model="newPassword2" required
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
-        <p v-if="errors.new_password2" class="text-red-500 text-xs mt-1">{{ errors.new_password2.join(', ') }}</p>
-      </div>
-      <div v-if="generalErrorMessage" class="text-red-500 text-sm">
-        {{ generalErrorMessage }}
-      </div>
-      <p v-if="errors.uidb64" class="text-red-500 text-xs mt-1">{{ errors.uidb64.join(', ') }}</p>
-      <p v-if="errors.token" class="text-red-500 text-xs mt-1">{{ errors.token.join(', ') }}</p>
-      <p v-if="errors.detail" class="text-red-500 text-xs mt-1">{{ errors.detail.join(', ') }}</p>
-      <div>
-        <button type="submit" :disabled="loading"
-                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
-          {{ loading ? 'Resetting...' : 'Reset Password' }}
-        </button>
-      </div>
-    </form>
-    <div v-if="successMessage" class="text-green-500 text-sm text-center py-4">
-      {{ successMessage }}
-      <div class="mt-4">
-        <router-link :to="{ name: 'login' }" class="text-indigo-600 hover:underline dark:text-indigo-400">
-          Proceed to Login
-        </router-link>
-      </div>
+  <h1 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Reset Password</h1>
+  <form v-if="!successMessage && displayForm" @submit.prevent="handleResetPassword" class="space-y-4">
+    <div>
+      <label for="new_password1" class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+      <input
+        type="password"
+        id="new_password1"
+        v-model="newPassword1"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+      />
+      <p v-if="errors.new_password1" class="text-red-500 text-xs mt-1">{{ errors.new_password1.join(', ') }}</p>
     </div>
-    <div v-if="!displayForm && !successMessage" class="text-red-500 text-sm text-center py-4">
-      <p>{{ generalErrorMessage || "The password reset link is invalid or has expired." }}</p>
-      <p>Please <router-link :to="{ name: 'forgot-password' }" class="text-indigo-600 hover:underline dark:text-indigo-400">request a new one</router-link>.</p>
+    <div>
+      <label for="new_password2" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm New Password</label>
+      <input
+        type="password"
+        id="new_password2"
+        v-model="newPassword2"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+      />
+      <p v-if="errors.new_password2" class="text-red-500 text-xs mt-1">{{ errors.new_password2.join(', ') }}</p>
     </div>
+    <div v-if="generalErrorMessage" class="text-red-500 text-sm">
+      {{ generalErrorMessage }}
+    </div>
+    <p v-if="errors.uidb64" class="text-red-500 text-xs mt-1">{{ errors.uidb64.join(', ') }}</p>
+    <p v-if="errors.token" class="text-red-500 text-xs mt-1">{{ errors.token.join(', ') }}</p>
+    <p v-if="errors.detail" class="text-red-500 text-xs mt-1">{{ errors.detail.join(', ') }}</p>
+    <div>
+      <button
+        type="submit"
+        :disabled="loading"
+        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+      >
+        {{ loading ? 'Resetting...' : 'Reset Password' }}
+      </button>
+    </div>
+  </form>
+  <div v-if="successMessage" class="text-green-500 text-sm text-center py-4">
+    {{ successMessage }}
+    <div class="mt-4">
+      <router-link :to="{ name: 'login' }" class="text-indigo-600 hover:underline dark:text-indigo-400">
+        Proceed to Login
+      </router-link>
+    </div>
+  </div>
+  <div v-if="!displayForm && !successMessage" class="text-red-500 text-sm text-center py-4">
+    <p>{{ generalErrorMessage || "The password reset link is invalid or has expired." }}</p>
+    <p>
+      Please
+      <router-link :to="{ name: 'forgot-password' }" class="text-indigo-600 hover:underline dark:text-indigo-400">
+        request a new one
+      </router-link>.
+    </p>
+  </div>
 </template>
 
 <script setup>

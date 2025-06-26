@@ -1,9 +1,9 @@
 <template>
-    <h1 class="text-3xl font-bold mb-8 text-blue-700 dark:text-blue-300 text-center">MyVidVault Privacy Policy</h1>
-    <div class="prose dark:prose-invert max-w-none">
+    <h1 class="text-3xl font-bold mb-8 text-blue-700 text-center dark:text-blue-300">MyVidVault Privacy Policy</h1>
+    <div class="prose max-w-none text-gray-800 dark:text-gray-200">
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Our Privacy Principles</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Our Privacy Principles</h2>
         <ul class="list-disc pl-6">
           <li>We don’t ask for personal information unless we truly need it.</li>
           <li>We don’t share your information unless it’s to provide a service, comply with the law, or protect our rights.</li>
@@ -12,7 +12,7 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">What This Policy Covers</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">What This Policy Covers</h2>
         <p>
           This Privacy Policy applies to the use of Myvidvault.com and all services provided under the Myvidvault brand (“Platform”). It describes how we collect, use, and safeguard personally identifiable information (“Personal Information”), such as your email address, IP address, or usage data.
         </p>
@@ -22,7 +22,7 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Information We Collect</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Information We Collect</h2>
         <p>When you register for an account or use the Platform, we may collect:</p>
         <ul class="list-disc pl-6">
           <li>Email address (for account creation and communication)</li>
@@ -35,7 +35,7 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">IP Addresses</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">IP Addresses</h2>
         <p>We may use IP addresses for:</p>
         <ul class="list-disc pl-6">
           <li>Diagnosing service issues</li>
@@ -46,7 +46,7 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Cookies</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Cookies</h2>
         <p>Cookies are small files sent to your browser to identify your session.</p>
         <p>We use cookies to:</p>
         <ul class="list-disc pl-6">
@@ -59,14 +59,14 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Third-Party Data Matching</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Third-Party Data Matching</h2>
         <p>
           We may share hashed, non-human-readable versions of your email address with trusted third-party partners for analytics or personalized advertising. No personally identifiable data is shared without your explicit consent.
         </p>
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Sharing and Disclosure</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Sharing and Disclosure</h2>
         <p>We do not sell or rent your Personal Information.</p>
         <p>We may disclose your data under these conditions:</p>
         <ul class="list-disc pl-6">
@@ -82,7 +82,7 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Communications</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Communications</h2>
         <p>We may send:</p>
         <ul class="list-disc pl-6">
           <li>Administrative messages related to your account</li>
@@ -93,7 +93,7 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Account Editing and Deletion</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Account Editing and Deletion</h2>
         <p>You may update or delete your account from your settings page at any time.</p>
         <ul class="list-disc pl-6">
           <li>Some data may remain in backups or logs for legal or operational reasons.</li>
@@ -102,7 +102,7 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Data Security</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Data Security</h2>
         <p>
           We use commercially reasonable security practices, including SSL encryption where applicable, to protect your data. However, no method of transmission is 100% secure. You share information at your own risk.
         </p>
@@ -112,14 +112,14 @@
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Business Transfers</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Business Transfers</h2>
         <p>
           If Myvidvault is acquired, merged, or enters bankruptcy, your data may be transferred as part of the business assets. You will be notified and provided with updated privacy terms where required.
         </p>
       </section>
 
       <section class="mb-6">
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Changes to This Policy</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Changes to This Policy</h2>
         <p>
           We may update this Privacy Policy periodically. When we do, we’ll update the “Effective Date” above and notify you of any material changes.
         </p>
@@ -129,7 +129,7 @@
       </section>
 
       <section>
-        <h2 class="text-2xl font-semibold mt-8 mb-2">Contact</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-2 text-gray-800 dark:text-gray-200">Contact</h2>
         <p>
           If you have questions or concerns about your privacy, data usage, or this policy, contact us at:<br>
           <a href="mailto:myvidvault506@gmail.com" class="text-blue-600 dark:text-blue-400">myvidvault506@gmail.com</a>
