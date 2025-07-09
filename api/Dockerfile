@@ -16,4 +16,6 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app/
 
+RUN ulimit -n 4096 || true
+
 CMD ["uvicorn", "api.asgi:application", "--host", "0.0.0.0", "--port", "8000"]

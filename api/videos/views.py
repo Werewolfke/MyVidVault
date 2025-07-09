@@ -56,8 +56,10 @@ class UsersWhoBookmarkedView(APIView):
 
     def get(self, request, video_id):
         try:
-            bookmarks = Bookmark.objects.filter(video_id=video_id).select_related('user')
+            # Prefetch user and user profile to avoid N+1 queries in serializer
+            bookmarks = Bookmark.objects.filter(video_id=video_id).select_related('user', 'user__profile')
             users = [bookmark.user for bookmark in bookmarks if bookmark.user]
+            # Use .only() to limit fields if UserPublicSerializer does not need all fields
             serializer = UserPublicSerializer(users, many=True)
             return Response(serializer.data)
         except Exception as e:

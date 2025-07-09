@@ -76,8 +76,10 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['username', 'avatar_url', 'collections', 'followers_count', 'following_count', 'bookmarks_count', 'likes_count']
 
+
     def get_collections(self, obj):
-        collections = Collection.objects.filter(user=obj.user)
+        # Use select_related/prefetch_related for efficiency if collections have related data
+        collections = Collection.objects.filter(user=obj.user).prefetch_related('channels')
         return CollectionSerializer(collections, many=True).data
 
     def get_followers_count(self, obj):

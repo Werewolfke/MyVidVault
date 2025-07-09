@@ -31,7 +31,8 @@ class MyCollectionsListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        collections = Collection.objects.filter(user=request.user)
+        # Prefetch channels for efficiency
+        collections = Collection.objects.filter(user=request.user).prefetch_related('channels')
         serializer = CollectionSerializer(collections, many=True)
         return Response(serializer.data)
 
@@ -41,7 +42,7 @@ class CollectionChannelsListView(APIView):
     def get(self, request, collection_id):
         # Only allow access to own collections
         try:
-            collection = Collection.objects.get(id=collection_id, user=request.user)
+            collection = Collection.objects.prefetch_related('channels').get(id=collection_id, user=request.user)
         except Collection.DoesNotExist:
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         channels = collection.channels.all()
