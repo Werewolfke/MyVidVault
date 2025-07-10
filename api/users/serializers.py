@@ -56,10 +56,10 @@ class CollectionSerializer(serializers.ModelSerializer):
 
 class UserProfileDetailSerializer(serializers.ModelSerializer):
     collections = serializers.SerializerMethodField()
-    followers_count = serializers.SerializerMethodField()
-    following_count = serializers.SerializerMethodField()
-    bookmarks_count = serializers.SerializerMethodField()
-    likes_count = serializers.SerializerMethodField()
+    followers_count = serializers.IntegerField(read_only=True)
+    following_count = serializers.IntegerField(read_only=True)
+    bookmarks_count = serializers.IntegerField(read_only=True)
+    likes_count = serializers.IntegerField(read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     avatar_url = serializers.SerializerMethodField()
 
@@ -78,22 +78,15 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
 
 
     def get_collections(self, obj):
-        # Use select_related/prefetch_related for efficiency if collections have related data
-        collections = Collection.objects.filter(user=obj.user).prefetch_related('channels')
+        # Use prefetched collections if available (set in view)
+        collections = getattr(obj, '_prefetched_collections', None)
+        if collections is None:
+            from users.models import Collection
+            collections = Collection.objects.filter(user=obj.user).prefetch_related('channels')
         return CollectionSerializer(collections, many=True).data
 
-    def get_followers_count(self, obj):
-        return Follow.objects.filter(followed=obj.user).count()
 
-    def get_following_count(self, obj):
-        return Follow.objects.filter(follower=obj.user).count()
-
-    def get_bookmarks_count(self, obj):
-        return Bookmark.objects.filter(user=obj.user).count()
-
-    def get_likes_count(self, obj):
-        from operations.models import VideoLike
-        return VideoLike.objects.filter(user=obj.user).count()
+    # Count fields now use annotated/attached values from the view for efficiency
 
     def get_avatar_url(self, obj):
         request = self.context.get('request')

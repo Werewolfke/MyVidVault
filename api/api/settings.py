@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'api.middleware.CloseDBConnectionsMiddleware',  # Ensures DB connections are always closed
 ]
 
 ROOT_URLCONF = 'api.urls'
@@ -75,9 +76,9 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-        'CONN_MAX_AGE': 60,  # Persistent connections for 60s
+        'HOST': os.getenv('DB_HOST', 'pgbouncer'),  # Use PgBouncer
+        'PORT': os.getenv('DB_PORT', '6432'),       # PgBouncer port
+        'CONN_MAX_AGE': 0,  # Required for PgBouncer transaction pooling
         'OPTIONS': {
             'connect_timeout': 10,
         },
@@ -106,6 +107,7 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -113,6 +115,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 25,
 }
+
+# Import cache settings for Redis
+try:
+    from .cache_settings import *
+except ImportError:
+    pass
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),

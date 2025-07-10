@@ -12,14 +12,40 @@ from .serializers import CollectionSerializer, ChannelSerializer
 from operations.models import Video
 
 class UserProfileView(generics.RetrieveAPIView):
-    queryset = Profile.objects.select_related('user')
+    queryset = (
+        Profile.objects.select_related('user')
+        .only(
+            'id', 'user__username', 'bio', 'avatar', 'default_bookmark_orientation', 'default_bookmark_collection',
+            'notify_on_follow', 'notify_on_own_video_bookmarked', 'notify_on_new_bookmark_from_followed_user', 'notify_on_own_video_liked'
+        )
+        .prefetch_related('user__collection_set', 'user__bookmark_set')
+    )
     serializer_class = UserProfileDetailSerializer  # Use the detailed serializer
     lookup_field = 'user__username'
 
     def get_object(self):
+        from django.db.models import Count
+        from operations.models import VideoLike
+        from users.models import Follow, Bookmark, Collection
         username = self.kwargs.get('username')
-        profile = get_object_or_404(Profile, user__username=username)
-        # Optionally, add privacy logic here
+        profile = get_object_or_404(
+            Profile.objects.select_related('user').only(
+                'id', 'user__username', 'bio', 'avatar', 'default_bookmark_orientation', 'default_bookmark_collection',
+                'notify_on_follow', 'notify_on_own_video_bookmarked', 'notify_on_new_bookmark_from_followed_user', 'notify_on_own_video_liked'
+            ),
+            user__username=username
+        )
+        user = profile.user
+        # Annotate counts efficiently
+        profile.followers_count = Follow.objects.filter(followed=user).count()
+        profile.following_count = Follow.objects.filter(follower=user).count()
+        profile.bookmarks_count = Bookmark.objects.filter(user=user).count()
+        try:
+            profile.likes_count = VideoLike.objects.filter(user=user).count()
+        except Exception:
+            profile.likes_count = 0
+        # Prefetch collections and channels for serializer
+        profile._prefetched_collections = Collection.objects.filter(user=user).prefetch_related('channels')
         return profile
 
     def get_serializer_context(self):

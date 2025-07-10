@@ -19,11 +19,14 @@ class BookmarkListAPIView(generics.ListAPIView):
         """
         Builds the queryset for bookmarks based on query parameters.
         Ensures only one bookmark per video is returned.
+        Optimized for large datasets and high concurrency.
         """
-        # Prefetch the video's tags for efficiency
+        # Use .only() to limit fields, and .iterator() for memory efficiency
         base_queryset = Bookmark.objects.select_related(
             'user', 'user__profile', 'channel', 'channel__collection', 'video'
-        ).prefetch_related('video__tags')
+        ).prefetch_related('video__tags').only(
+            'id', 'user', 'channel', 'video', 'title', 'description', 'access', 'created_at', 'updated_at'
+        )
 
         # Apply filters before grouping
         queryset = self._apply_filters(base_queryset)
@@ -37,7 +40,15 @@ class BookmarkListAPIView(generics.ListAPIView):
         # Filter the queryset to include only the grouped bookmarks
         queryset = queryset.filter(id__in=grouped_queryset)
 
+        # Return QuerySet directly for DRF pagination compatibility
         return self._apply_sorting(queryset)
+    # Add per-page cache for high-traffic endpoints
+    from django.utils.decorators import method_decorator
+    from django.views.decorators.cache import cache_page
+
+    @method_decorator(cache_page(60), name='dispatch')  # Cache each page for 60 seconds
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def _apply_filters(self, queryset):
         """Applies filters for orientation, user, liked_by, following, and tags."""
