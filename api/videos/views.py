@@ -39,16 +39,19 @@ class VideoLikeToggleView(APIView):
         except Video.DoesNotExist:
             return Response({'detail': 'Video not found.'}, status=status.HTTP_404_NOT_FOUND)
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 class VideoLikeStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(cache_page(60))  # Cache for 1 minute
     def get(self, request, video_id):
-        try:
-            video = Video.objects.get(id=video_id)
-        except Video.DoesNotExist:
-            return Response({"error": "Video not found"}, status=404)
-
-        is_liked = VideoLike.objects.filter(video=video, user=request.user).exists()
+        # Optimized query - no need to fetch the full video object
+        is_liked = VideoLike.objects.filter(
+            video_id=video_id, 
+            user=request.user
+        ).exists()
         return Response({"is_liked": is_liked})
 
 class UsersWhoBookmarkedView(APIView):

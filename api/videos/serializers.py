@@ -23,6 +23,8 @@ class ManualBookmarkSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
+        from operations.utils import create_or_get_tags
+        
         user = self.context['request'].user
         video_data = validated_data['video']
         bookmark_data = validated_data['bookmark']
@@ -38,11 +40,9 @@ class ManualBookmarkSerializer(serializers.Serializer):
                 'created_by': user,
             }
         )
-        # Convert tag names to Tag objects for video
-        video_tags = []
-        for tag_name in video_data['tags']:
-            tag, _ = Tag.objects.get_or_create(name=tag_name)
-            video_tags.append(tag)
+        
+        # Use utility function to create/get tags for video
+        video_tags = create_or_get_tags(video_data['tags'])
         video.tags.set(video_tags)
         video.save()
 
@@ -60,11 +60,9 @@ class ManualBookmarkSerializer(serializers.Serializer):
             description=bookmark_data['description'],
             access=bookmark_data['access'],
         )
-        # Convert tag names to Tag objects for bookmark
-        bookmark_tags = []
-        for tag_name in bookmark_data['tags']:
-            tag, _ = Tag.objects.get_or_create(name=tag_name)
-            bookmark_tags.append(tag)
+        
+        # Use utility function to create/get tags for bookmark
+        bookmark_tags = create_or_get_tags(bookmark_data['tags'])
         bookmark.tags.set(bookmark_tags)
         bookmark.save()
         return bookmark

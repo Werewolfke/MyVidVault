@@ -32,11 +32,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',  # Add blacklist support
     'operations',
     'users',
     'corsheaders',
     'videos',
     'storages',
+    'debug_toolbar',
+    'moderation',
 ]
 
 MIDDLEWARE = [
@@ -48,7 +51,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'api.middleware.DatabaseOptimizationMiddleware',  # Handle database temp file issues
     'api.middleware.CloseDBConnectionsMiddleware',  # Ensures DB connections are always closed
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'
@@ -122,8 +127,38 @@ try:
 except ImportError:
     pass
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+    '206.125.203.19',  # Remote IP
+    '172.18.0.1',    # Common Docker bridge IP for nginx
+    '172.18.0.9',    # Example nginx container IP (adjust as needed)
+]
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # Extended to 7 days
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),  # 30 days refresh token
+    "ROTATE_REFRESH_TOKENS": True,  # Generate new refresh token on refresh
+    "BLACKLIST_AFTER_ROTATION": True,  # Blacklist old refresh tokens
+    "UPDATE_LAST_LOGIN": True,  # Update last_login field on token refresh
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(days=7),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=30),
 }
 
 CORS_ALLOW_CREDENTIALS = True

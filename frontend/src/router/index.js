@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
+import Explore from '@/views/Explore.vue';
 import BookmarkDetailView from '@/views/bookmarks/BookmarkDetailView.vue';
 import UserProfileView from '@/views/user/UserProfileView.vue';
 import CreateBookmarkView from '@/views/bookmarks/CreateBookmarkView.vue';
@@ -13,12 +14,19 @@ import PrivacyView from '../views/website/PrivacyView.vue'
 import RegisterView from '../views/website/RegisterView.vue'
 import ResetPasswordConfirmView from '../views/website/ResetPasswordConfirmView.vue'
 import TermsView from '../views/website/TermsView.vue'
+import moderatorRoutes from './moderator.js'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: Home,
+    meta: { fullPage: true },
+  },
+  {
+    path: '/explore',
+    name: 'explore',
+    component: Explore,
   },
   {
     path: '/bookmarks/:id',
@@ -51,16 +59,37 @@ const routes = [
     props: true,
   },
   {
+    // Redirect incorrect singular 'user' to correct plural 'users'
+    path: '/user/:username',
+    redirect: to => {
+      return { name: 'user-profile', params: { username: to.params.username } }
+    }
+  },
+  // Removed /profile/me route; use /users/:username for profile
+  {
     path: '/bookmarks/create',
     name: 'CreateBookmark',
     component: CreateBookmarkView,
     meta: { requiresAuth: true }
   },
+  // All previous routes
+  ...moderatorRoutes,
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+// Add debug logging to see route changes
+router.beforeEach((to, from, next) => {
+  console.log('Router navigation:', { 
+    from: from.fullPath, 
+    to: to.fullPath,
+    toName: to.name,
+    toParams: to.params 
+  });
+  next();
 });
 
 export default router;

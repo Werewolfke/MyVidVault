@@ -1,6 +1,24 @@
+from django.conf import settings
 from django.db import models
 from django.conf import settings
 from users.models import Bookmark
+
+class AuditLog(models.Model):
+    ACTION_CHOICES = [
+        ('edit_video', 'Edit Video'),
+        ('edit_bookmark', 'Edit Bookmark'),
+        ('assign_report', 'Assign Report'),
+        ('approve_report', 'Approve Report'),
+        ('deny_report', 'Deny Report'),
+    ]
+    moderator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    action = models.CharField(max_length=32, choices=ACTION_CHOICES)
+    video = models.ForeignKey('Video', null=True, blank=True, on_delete=models.SET_NULL)
+    bookmark = models.ForeignKey('users.Bookmark', null=True, blank=True, on_delete=models.SET_NULL)
+    report = models.ForeignKey('Report', null=True, blank=True, on_delete=models.SET_NULL)
+    details = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 # Choices
 ORIENTATION_CHOICES = [
@@ -21,15 +39,27 @@ REPORT_TYPE_CHOICES = [
 
 # Models
 class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True, db_index=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
         if self.name:
-            self.name = self.name.lower().replace(' ', '')
+            # Normalize the tag name to ensure consistency
+            self.name = self.name.lower().replace(' ', '').strip()
         super().save(*args, **kwargs)
+    
+    def clean(self):
+        if self.name:
+            self.name = self.name.lower().replace(' ', '').strip()
+            if not self.name:
+                from django.core.exceptions import ValidationError
+                raise ValidationError('Tag name cannot be empty after normalization.')
+        super().clean()
 
 class Video(models.Model):
     source_url = models.URLField(max_length=2083, blank=True, null=True)
@@ -74,6 +104,10 @@ class VideoLike(models.Model):
     class Meta:
         unique_together = ('user', 'video')
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'video'], name='videolike_user_video_idx'),
+            models.Index(fields=['video', 'created_at'], name='videolike_video_crt_idx'),
+        ]
 
     def __str__(self):
         return f"{self.user.username} likes {self.video.title}"

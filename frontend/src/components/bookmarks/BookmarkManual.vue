@@ -121,6 +121,7 @@
         </select>
       </div>
       <button
+        v-if="!isEditMode"
         type="submit"
         class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
         :disabled="isSubmitting"
@@ -132,8 +133,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, defineEmits } from 'vue'
+import { ref, reactive, watch, onMounted, defineEmits, defineProps } from 'vue'
 import axios from 'axios'
+
+// Define props for initial data
+const props = defineProps({
+  initialVideoData: { type: Object, default: () => ({}) },
+  initialBookmarkData: { type: Object, default: () => ({}) },
+  initialTagsString: { type: String, default: '' },
+  isEditMode: { type: Boolean, default: false },
+  apiValidationErrors: { type: Object, default: () => ({}) }
+})
 
 const isSubmitting = ref(false)
 const userCollections = ref([])
@@ -154,7 +164,7 @@ const videoData = reactive({
 const bookmarkData = reactive({
   channel: null,
   description: '',
-  access: null,
+  access: 'public', // Set default value
 })
 
 const tagsInput = ref('')
@@ -174,20 +184,76 @@ const bookmarkAccessChoices = [
 
 const emit = defineEmits(['update:formData'])
 
+// Function to populate form with initial data
+function populateForm() {
+  // Populate video data
+  if (props.initialVideoData) {
+    Object.assign(videoData, {
+      source_url: props.initialVideoData.source_url || '',
+      title: props.initialVideoData.title || '',
+      thumbnail_url: props.initialVideoData.thumbnail_url || '',
+      embed_url: props.initialVideoData.embed_url || '',
+      orientation: props.initialVideoData.orientation || null,
+    })
+  }
+  
+  // Populate bookmark data
+  if (props.initialBookmarkData) {
+    Object.assign(bookmarkData, {
+      channel: props.initialBookmarkData.channel || null,
+      description: props.initialBookmarkData.description || '',
+      access: props.initialBookmarkData.access || 'public',
+    })
+  }
+  
+  // Populate tags
+  if (props.initialTagsString) {
+    tagsInput.value = props.initialTagsString
+  }
+  
+  // Get channel name for preview
+  emitFormData()
+}
+
+function emitFormData() {
+  const selectedChannel = userChannels.value.find(channel => channel.id === bookmarkData.channel)
+  emit('update:formData', {
+    video: { ...videoData },
+    bookmark: { ...bookmarkData },
+    tags: tagsInput.value.split(',').map(t => t.trim()).filter(Boolean),
+    channelName: selectedChannel ? selectedChannel.name : ''
+  })
+}
+
 watch(
   [videoData, bookmarkData, tagsInput],
   () => {
-    emit('update:formData', {
-      video: { ...videoData },
-      bookmark: { ...bookmarkData },
-      tags: tagsInput.value.split(',').map(t => t.trim()).filter(Boolean),
-    })
+    emitFormData()
   },
   { deep: true }
 )
 
+// Watch for changes in userChannels to update form data with channel name
+watch(
+  userChannels,
+  () => {
+    emitFormData()
+  },
+  { deep: true }
+)
+
+// Watch for props changes and repopulate form
+watch(
+  () => [props.initialVideoData, props.initialBookmarkData, props.initialTagsString],
+  () => {
+    populateForm()
+  },
+  { deep: true, immediate: true }
+)
+
 onMounted(async () => {
   await fetchCollections()
+  populateForm() // Populate after collections are loaded
 })
 
 watch(
@@ -269,12 +335,6 @@ async function handleSubmit() {
 
 <style scoped>
 /* Keep styles for form elements, remove container styles */
-
-h2 { /* Style the new h2 */
-  /* text-align: center; */ /* Remove centering */
-  /* margin-bottom: 20px; */ /* Adjust as needed */
-  /* color: #333; */ /* Use Tailwind */
-}
 
 fieldset {
   border: 1px solid #ddd; /* Consider Tailwind borders: border border-gray-300  */

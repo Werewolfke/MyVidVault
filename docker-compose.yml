@@ -16,8 +16,8 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_MAX_CONNECTIONS: 1000
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"  # Commented out for security - only internal access needed
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -27,6 +27,8 @@ services:
       - "max_connections=1000"
       - "-c"
       - "password_encryption=md5"
+      - "-c"
+      - "temp_file_limit=1GB"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 30s
@@ -39,8 +41,8 @@ services:
     image: edoburu/pgbouncer:latest
     depends_on:
       - db
-    ports:
-      - "6432:6432"
+    # ports:
+    #   - "6432:6432"  # Commented out for security - only internal access needed
     environment:
       DB_HOST: db
       DB_USER: ${DB_USER}

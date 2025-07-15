@@ -58,6 +58,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(upload_to=avatar_upload_to, blank=True, null=True)
+    is_moderator = models.BooleanField(default=False)
 
     # --- User Preferences ---
     default_bookmark_orientation = models.CharField(

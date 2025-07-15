@@ -1,21 +1,5 @@
 <template>
   <div class="mb-10 lg:mb-0">
-    <!-- Informational Note -->
-    <div class="mb-4 p-3 rounded-md bg-yellow-50 border border-yellow-200 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-300">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-yellow-400 dark:text-yellow-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 3.001-1.742 3.001H4.42c-1.53 0-2.493-1.667-1.743-3.001l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 011-1h.008a1 1 0 011 1v3.006a1 1 0 01-1 1h-.008a1 1 0 01-1-1V5z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3 flex-1 md:flex md:justify-between">
-          <p class="text-sm text-yellow-700 dark:text-yellow-300">
-            Auto Detection is currently disabled. Please add manually.
-          </p>
-        </div>
-      </div>
-    </div>
-
     <!-- Step 1: Enter URL -->
     <div class="mb-8">
       <label for="videoUrl" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">Video URL</label>
@@ -24,22 +8,22 @@
           type="url"
           id="videoUrl"
           v-model="urlInput"
-          placeholder="Enter URL for auto-detection..."
-          :disabled="true"
-          class="block w-full flex-1 rounded-none rounded-l-md border-gray-300 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
+          placeholder="Enter video URL to extract metadata..."
+          :disabled="fetchLoading"
+          class="block w-full flex-1 rounded-none rounded-l-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
           @keyup.enter="handleFetchMetadata"
         />
         <button
           @click="handleFetchMetadata"
-          :disabled="true"
+          :disabled="fetchLoading || !urlInput.trim()"
           type="button"
-          class="relative -ml-px inline-flex items-center space-x-2 rounded-r-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          class="relative -ml-px inline-flex items-center space-x-2 rounded-r-md border border-gray-300 bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50 disabled:bg-gray-400 dark:border-gray-600 dark:bg-indigo-500 dark:hover:bg-indigo-600"
         >
-          <svg v-if="fetchLoading" class="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg v-if="fetchLoading" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span>{{ fetchLoading ? 'Detecting...' : 'Detect Info' }}</span>
+          <span>{{ fetchLoading ? 'Extracting...' : 'Extract Info' }}</span>
         </button>
       </div>
       <p v-if="fetchError" class="mt-2 text-sm text-red-600 dark:text-red-400">{{ fetchErrorMessage }}</p>
@@ -55,12 +39,12 @@
           <!-- Manual Form Column -->
           <div class="md:col-span-1">
             <BookmarkManual
-              :initial-video-data="initialVideoDataForManual"
-              :initial-bookmark-data="initialBookmarkDataForManual"
-              :initial-tags-string="initialTagsStringForManual"
-              :is-edit-mode="true"
-              @update:form-data="handleManualFormUpdate"
-              :api-validation-errors="manualFormApiErrors"
+              :initialVideoData="initialVideoDataForManual"
+              :initialBookmarkData="initialBookmarkDataForManual"
+              :initialTagsString="initialTagsStringForManual"
+              :isEditMode="true"
+              @update:formData="handleManualFormUpdate"
+              :apiValidationErrors="manualFormApiErrors"
             />
           </div>
           <!-- Preview Column -->
@@ -115,7 +99,167 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
+import api, { extractVideoMetadata, createManualBookmark } from '@/api'
+import BookmarkManual from '@/components/bookmarks/BookmarkManual.vue'
+import BookmarkManualPreview from '@/components/bookmarks/BookmarkManualPreview.vue'
 
+// Reactive data
+const urlInput = ref('')
+const fetchLoading = ref(false)
+const fetchError = ref(false)
+const fetchErrorMessage = ref('')
+const fetchedData = ref(null)
+const saveLoading = ref(false)
+const saveError = ref(false)
+const saveErrorMessage = ref('')
+const saveSuccess = ref(false)
+const createdBookmarkId = ref(null)
+const manualFormApiErrors = ref({})
+
+// Manual form data
+const currentManualFormData = ref({
+  video: {},
+  bookmark: {},
+  tags: [],
+  channelName: ''
+})
+
+// Computed properties for manual form initial data
+const initialVideoDataForManual = computed(() => {
+  if (!fetchedData.value) return {}
+  return fetchedData.value.video
+})
+
+const initialBookmarkDataForManual = computed(() => {
+  if (!fetchedData.value) return {}
+  return {
+    title: fetchedData.value.video.title || '',
+    orientation: fetchedData.value.video.orientation || 'sfw',
+    access: 'public'
+  }
+})
+
+const initialTagsStringForManual = computed(() => {
+  if (!fetchedData.value) return ''
+  return fetchedData.value.suggested_tags.join(', ')
+})
+
+// Methods
+async function handleFetchMetadata() {
+  if (!urlInput.value.trim()) return
+  
+  fetchLoading.value = true
+  fetchError.value = false
+  fetchErrorMessage.value = ''
+  fetchedData.value = null
+  
+  try {
+    const response = await extractVideoMetadata(urlInput.value.trim())
+    
+    fetchedData.value = response
+    
+    // Initialize manual form data with extracted data
+    currentManualFormData.value = {
+      video: { ...response.video },
+      bookmark: {
+        title: response.video.title || '',
+        orientation: response.video.orientation || 'sfw',
+        access: 'public'
+      },
+      tags: response.suggested_tags || [],
+      channelName: response.channel_name || ''
+    }
+    
+  } catch (error) {
+    fetchError.value = true
+    if (error.response?.data?.error) {
+      fetchErrorMessage.value = error.response.data.error
+    } else {
+      fetchErrorMessage.value = 'Failed to extract metadata from URL'
+    }
+    console.error('Metadata extraction error:', error)
+  } finally {
+    fetchLoading.value = false
+  }
+}
+
+function handleManualFormUpdate(newData) {
+  currentManualFormData.value = { ...currentManualFormData.value, ...newData }
+}
+
+async function handleSaveBookmark() {
+  if (!currentManualFormData.value.bookmark.channel || 
+      !currentManualFormData.value.video.title || 
+      currentManualFormData.value.tags.length === 0) {
+    return
+  }
+  
+  saveLoading.value = true
+  saveError.value = false
+  saveErrorMessage.value = ''
+  manualFormApiErrors.value = {}
+  
+  try {
+    const payload = {
+      video: {
+        source_url: currentManualFormData.value.video.source_url || '',
+        title: currentManualFormData.value.video.title || '',
+        thumbnail_url: currentManualFormData.value.video.thumbnail_url || '',
+        embed_url: currentManualFormData.value.video.embed_url || '',
+        orientation: currentManualFormData.value.video.orientation || 'sfw',
+        tags: currentManualFormData.value.tags // Array of tag names
+      },
+      bookmark: {
+        channel_id: currentManualFormData.value.bookmark.channel, // Use channel_id
+        description: currentManualFormData.value.bookmark.description || '',
+        access: currentManualFormData.value.bookmark.access || 'public',
+        tags: currentManualFormData.value.tags // Array of tag names
+      }
+    }
+    
+    console.log('Sending payload:', payload) // Debug log
+    
+    const response = await createManualBookmark(payload)
+    
+    saveSuccess.value = true
+    createdBookmarkId.value = response.id
+    
+    // Reset form after successful save
+    setTimeout(() => {
+      urlInput.value = ''
+      fetchedData.value = null
+      currentManualFormData.value = {
+        video: {},
+        bookmark: {},
+        tags: [],
+        channelName: ''
+      }
+      saveSuccess.value = false
+      createdBookmarkId.value = null
+    }, 3000)
+    
+  } catch (error) {
+    saveError.value = true
+    
+    if (error.response?.data) {
+      if (typeof error.response.data === 'string') {
+        saveErrorMessage.value = error.response.data
+      } else if (error.response.data.error) {
+        saveErrorMessage.value = error.response.data.error
+      } else {
+        // Handle validation errors
+        manualFormApiErrors.value = error.response.data
+        saveErrorMessage.value = 'Please check the form for errors'
+      }
+    } else {
+      saveErrorMessage.value = 'Failed to save bookmark'
+    }
+    console.error('Save bookmark error:', error)
+  } finally {
+    saveLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
