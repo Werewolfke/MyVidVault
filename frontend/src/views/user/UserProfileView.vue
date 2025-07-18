@@ -17,40 +17,26 @@
               </svg>
             </span>
           </h1>
-          <div class="flex gap-2">
-            <button v-if="!isOwnProfile" 
-              @click="toggleFollowUser"
-              :disabled="followLoading"
-              :class="[
-                'px-4 py-2 rounded shadow transition font-semibold text-sm',
-                isFollowing 
-                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500' 
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600',
-                followLoading ? 'opacity-50 cursor-not-allowed' : ''
-              ]">
-              {{ followLoading ? 'Loading...' : (isFollowing ? 'Unfollow' : 'Follow') }}
-            </button>
-            <button v-if="isOwnProfile" class="px-4 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition font-semibold text-sm" @click="openEditProfile">
-              Edit Profile
-            </button>
-          </div>
+          <button v-if="isOwnProfile" class="px-4 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition font-semibold text-sm" @click="openEditProfile">
+            Edit Profile
+          </button>
         </div>
         <p v-if="profile.bio" class="text-gray-600 dark:text-gray-400 mb-4 break-words text-sm">{{ profile.bio }}</p>
         <div class="flex flex-wrap justify-center md:justify-start gap-x-4 sm:gap-x-6 gap-y-2 my-4 text-sm">
           <div @click="switchTab('bookmarks')" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            <span class="font-semibold text-gray-800 dark:text-gray-200">{{ profile.bookmarks_count ?? (profile.bookmarks?.length ?? 0) }}</span>
+            <span class="font-semibold text-gray-800 dark:text-gray-200">{{ profile.bookmarks_count ?? 0 }}</span>
             <span class="text-gray-500 dark:text-gray-400 ml-1">Bookmarks</span>
           </div>
           <div @click="switchTab('liked')" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            <span class="font-semibold text-gray-800 dark:text-gray-200">{{ profile.likes_count ?? (profile.liked_videos?.length ?? 0) }}</span>
+            <span class="font-semibold text-gray-800 dark:text-gray-200">{{ profile.likes_count ?? 0 }}</span>
             <span class="text-gray-500 dark:text-gray-400 ml-1">Likes</span>
           </div>
-          <div @click="openUserListModal('followers')" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors group">
-            <span class="font-semibold text-gray-800 dark:text-gray-200 group-hover:underline">{{ profile.followers_count ?? (profile.followers?.length ?? 0) }}</span>
+          <div @click="showUserListModal('followers')" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors group">
+            <span class="font-semibold text-gray-800 dark:text-gray-200 group-hover:underline">{{ profile.followers_count ?? 0 }}</span>
             <span class="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
           </div>
-          <div @click="openUserListModal('following')" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors group">
-            <span class="font-semibold text-gray-800 dark:text-gray-200 group-hover:underline">{{ profile.following_count ?? (profile.following?.length ?? 0) }}</span>
+          <div @click="showUserListModal('following')" class="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors group">
+            <span class="font-semibold text-gray-800 dark:text-gray-200 group-hover:underline">{{ profile.following_count ?? 0 }}</span>
             <span class="text-gray-500 dark:text-gray-400 ml-1">Following</span>
           </div>
         </div>
@@ -200,52 +186,13 @@
         </div>
       </form>
     </BaseModal>
-
-    <!-- User List Modal (Followers/Following) -->
-    <BaseModal v-model="showUserListModal">
-      <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
-        {{ userListType === 'followers' ? 'Followers' : 'Following' }}
-      </h2>
-      <div v-if="userListLoading" class="text-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-        <p class="text-gray-600 dark:text-gray-400 mt-2">Loading...</p>
-      </div>
-      <div v-else-if="userListError" class="text-center py-8 text-red-500">
-        {{ userListError }}
-      </div>
-      <div v-else-if="userList.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
-        No {{ userListType }} found.
-      </div>
-      <div v-else class="max-h-96 overflow-y-auto">
-        <div class="space-y-3">
-          <div v-for="user in userList" :key="user.id" 
-            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div class="flex items-center space-x-3">
-              <img :src="user.avatar_url || defaultAvatar" :alt="user.username" 
-                class="w-10 h-10 rounded-full object-cover border dark:border-gray-600">
-              <div>
-                <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.username }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ userListType === 'followers' ? 'Followed since' : 'Following since' }} 
-                  {{ formatDate(user.followed_at) }}
-                </p>
-              </div>
-            </div>
-            <button @click="viewUserProfile(user.username)" 
-              class="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition">
-              View Profile
-            </button>
-          </div>
-        </div>
-      </div>
-    </BaseModal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchUserProfile, fetchMyProfile, fetchVideos, updateMyProfile, toggleFollow, checkFollowStatus, getFollowersList, getFollowingList } from '@/api/index.js'
+import { fetchUserProfile, fetchMyProfile, fetchVideos, updateMyProfile } from '@/api/index.js'
 import BookmarkGrid from '@/components/BookmarkGrid.vue'
 import OrientationFilter from '@/components/OrientationFilter.vue'
 import { useOrientationStore } from '@/stores/orientation.js'
@@ -255,13 +202,11 @@ import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
-const username = computed(() => route.params.username)
+const username = ref(route.params.username)
 const profile = ref(null)
 const loading = ref(true)
 const error = ref('')
 const showEditModal = ref(false)
-const showUserListModal = ref(false)
-const userListType = ref('followers')
 const editableProfile = ref({
   bio: '',
   default_bookmark_orientation: '',
@@ -285,12 +230,6 @@ const likedFilters = ref({ liked_by: username.value })
 const channelBookmarkFilters = ref({})
 const orientationStore = useOrientationStore()
 const currentPage = ref(1)
-const isFollowing = ref(false)
-const followLoading = ref(false)
-const userList = ref([])
-const userListLoading = ref(false)
-const userListError = ref('')
-const defaultAvatar = '/media/default.jpg'
 
 const mergedBookmarkFilters = computed(() => ({
   ...bookmarkFilters.value,
@@ -332,20 +271,6 @@ const fetchUserLiked = async (params = {}) => {
 const fetchChannelBookmarks = async (params = {}) => {
   if (!selectedChannel.value) return { results: [], count: 0 }
   return await fetchVideos({ ...params, channel: selectedChannel.value.id, user: username.value })
-}
-const fetchUserList = async (type) => {
-  userListLoading.value = true
-  userListError.value = ''
-  try {
-    const res = await axios.get(`/api/${type}/`, {
-      params: { username: username.value },
-    })
-    userList.value = res.data || []
-  } catch (e) {
-    userListError.value = e?.response?.data?.detail || 'Failed to load user list.'
-  } finally {
-    userListLoading.value = false
-  }
 }
 
 watch(selectedChannel, (channel) => {
@@ -402,39 +327,22 @@ async function openEditProfile() {
 
 async function saveProfileEdits() {
   try {
-    const formData = new FormData();
-    Object.entries(editableProfile.value).forEach(([k, v]) => formData.append(k, v ?? ''));
-    if (avatarFile.value) {
-      formData.append('avatar', avatarFile.value);
-    }
-    // Ensure correct headers for multipart upload
-    const access = localStorage.getItem('access');
-    const username = localStorage.getItem('username')
-    const res = await axios.patch(`/api/profile/${username}/`, formData, {
-      headers: {
-        'Authorization': `Bearer ${access}`,
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    // Update profile and avatar preview
-    profile.value = { ...profile.value, ...res.data };
-    if (res.data.avatar_url) {
-      avatarPreview.value = res.data.avatar_url;
-    }
-    showEditModal.value = false;
-  } catch (e) {
-    showEditModal.value = false;
-    // Optionally show error to user
-    error.value = e?.response?.data?.detail || 'Failed to update profile.';
+    const formData = new FormData()
+    Object.entries(editableProfile.value).forEach(([k, v]) => formData.append(k, v ?? ''))
+    if (avatarFile.value) formData.append('avatar', avatarFile.value)
+    const res = await updateMyProfile(formData)
+    profile.value = { ...profile.value, ...res }
+    showEditModal.value = false
+  } catch {
+    showEditModal.value = false
   }
 }
 
 function onAvatarChange(event) {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file) {
-    avatarFile.value = file;
-    // Show preview immediately
-    avatarPreview.value = URL.createObjectURL(file);
+    avatarFile.value = file
+    avatarPreview.value = URL.createObjectURL(file)
   }
 }
 
@@ -443,120 +351,18 @@ async function loadProfile() {
   error.value = ''
   try {
     let res
-    const userParam = username.value
-    if (!userParam) {
-      error.value = 'No username provided in route.'
-      loading.value = false
-      return
-    }
     if (isOwnProfile.value) {
-      res = await fetchMyProfile(userParam)
+      res = await fetchMyProfile()
     } else {
-      res = await fetchUserProfile(userParam)
-      // Check follow status for other users
-      await checkUserFollowStatus()
+      res = await fetchUserProfile(username.value)
     }
     profile.value = res
     collections.value = res.collections || []
-    // Debug output: log the full profile object and highlight missing stats
-    console.log('Profile API response:', res)
-    if (!('followers_count' in res)) console.warn('Missing followers_count in profile response')
-    if (!('following_count' in res)) console.warn('Missing following_count in profile response')
-    if (!('bookmarks_count' in res)) console.warn('Missing bookmarks_count in profile response')
-    if (!('likes_count' in res)) console.warn('Missing likes_count in profile response')
   } catch (e) {
     error.value = e?.detail || 'Failed to load profile.'
   } finally {
     loading.value = false
   }
-}
-
-async function checkUserFollowStatus() {
-  if (!isLoggedIn.value || !profile.value) return
-  
-  try {
-    const response = await checkFollowStatus(profile.value.user_id)
-    isFollowing.value = response.is_followed
-  } catch (error) {
-    console.error('Error checking follow status:', error)
-  }
-}
-
-async function toggleFollowUser() {
-  if (!isLoggedIn.value || !profile.value) return
-  
-  followLoading.value = true
-  try {
-    const response = await toggleFollow(profile.value.user_id)
-    isFollowing.value = response.is_followed
-    
-    // Update follower count
-    if (response.is_followed) {
-      profile.value.followers_count = (profile.value.followers_count || 0) + 1
-    } else {
-      profile.value.followers_count = Math.max((profile.value.followers_count || 0) - 1, 0)
-    }
-  } catch (error) {
-    console.error('Error toggling follow:', error)
-  } finally {
-    followLoading.value = false
-  }
-}
-
-function openUserListModal(type) {
-  userListType.value = type
-  showUserListModal.value = true
-  loadUserList(type)
-}
-
-async function loadUserList(type) {
-  if (!profile.value) return
-  
-  userListLoading.value = true
-  userListError.value = ''
-  userList.value = []
-  
-  try {
-    let response
-    if (type === 'followers') {
-      response = await getFollowersList(profile.value.user_id)
-    } else {
-      response = await getFollowingList(profile.value.user_id)
-    }
-    
-    userList.value = response[type] || []
-  } catch (error) {
-    console.error(`Error loading ${type}:`, error)
-    userListError.value = `Failed to load ${type}`
-  } finally {
-    userListLoading.value = false
-  }
-}
-
-function viewUserProfile(username) {
-  showUserListModal.value = false
-  if (username) {
-    console.log('Navigating to user profile:', username)
-    const route = router.resolve({ name: 'user-profile', params: { username } })
-    console.log('Resolved route:', route)
-    console.log('Current route path before navigation:', route.path)
-    
-    // Use replace instead of push to see if that helps
-    router.push({ name: 'user-profile', params: { username } })
-    
-    // Also log after navigation
-    setTimeout(() => {
-      console.log('Current route after navigation:', router.currentRoute.value.fullPath)
-    }, 100)
-  }
-}
-
-function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
 }
 
 onMounted(loadProfile)

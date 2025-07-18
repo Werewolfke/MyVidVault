@@ -51,14 +51,9 @@ def avatar_upload_to(instance, filename):
     return f"avatars/{username}{ext}"
 
 class Profile(models.Model):
-    class Meta:
-        indexes = [
-            models.Index(fields=["user"], name="profile_user_idx"),
-        ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(upload_to=avatar_upload_to, blank=True, null=True)
-    is_moderator = models.BooleanField(default=False)
 
     # --- User Preferences ---
     default_bookmark_orientation = models.CharField(

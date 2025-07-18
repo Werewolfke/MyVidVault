@@ -16,9 +16,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app/
 
-RUN ulimit -n 4096 || true
-
-RUN pip install gunicorn
-
-# Use Gunicorn with gthread workers for Django (WSGI)
-CMD ["gunicorn", "api.wsgi:application", "-b", "0.0.0.0:8000", "--workers=4", "--threads=8", "--timeout=60", "--access-logfile=-", "--error-logfile=-"]
+CMD ["uvicorn", "api.asgi:application", "--host", "0.0.0.0", "--port", "8000"]

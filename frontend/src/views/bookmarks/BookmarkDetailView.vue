@@ -34,14 +34,6 @@
 
   <!-- Bookmark Content -->
   <div v-else-if="bookmark">
-    <!-- Debug info (remove in production) -->
-    <div v-if="false" class="bg-yellow-100 p-2 mb-4 text-xs">
-      Debug: bookmark.video = {{ bookmark.video ? 'exists' : 'null' }}<br>
-      Debug: bookmark.video.id = {{ bookmark.video?.id }}<br>
-      Debug: bookmark.title = {{ bookmark.title }}<br>
-      Debug: loading = {{ loading }}<br>
-      Debug: error = {{ error ? 'has error' : 'no error' }}<br>
-    </div>
     <!-- User & Channel -->
     <div class="flex items-center gap-3 mb-6 relative">
       <img
@@ -88,73 +80,67 @@
           No Video Preview Available
         </div>
       </div>
+    </div>
 
-      <!-- Icon Section - positioned within video container -->
-      <div class="absolute bottom-2 right-2 bg-gray-800 rounded-lg shadow-lg p-2 flex gap-2">
-        <!-- Add Icon -->
-        <button
-          class="text-white hover:text-indigo-400 transition"
-          @click="showCollectModal = true"
-          :disabled="!bookmark?.id"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-          </svg>
-        </button>
+    <!-- Icon Section -->
+    <div class="absolute bottom-0 right-0 bg-gray-800 rounded-lg shadow-lg p-2 flex gap-2 justify-end m-2 w-auto">
+      <!-- Add Icon -->
+      <button
+        class="text-white hover:text-indigo-400 transition"
+        @click="showCollectModal = true"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+      </button>
 
-        <!-- Like Icon -->
-        <button
-          class="text-white hover:text-red-400 transition"
-          @click="toggleLike"
-          :disabled="!bookmark?.video?.id"
+      <!-- Like Icon -->
+      <button
+        class="text-white hover:text-red-400 transition"
+        @click="toggleLike"
+      >
+        <svg
+          :class="isLiked ? 'text-red-400' : 'text-white'"
+          class="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            :class="isLiked ? 'text-red-400' : 'text-white'"
-            class="w-5 h-5"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              v-if="isLiked"
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            />
-            <path
-              v-else
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            />
-          </svg>
-        </button>
+          <path
+            v-if="isLiked"
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+          />
+          <path
+            v-else
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+          />
+        </svg>
+      </button>
 
-        <!-- Report Icon -->
-        <button
-          class="text-white hover:text-yellow-400 transition"
-          @click="showReportModal = true"
-          :disabled="reportSubmitted || !bookmark?.video?.id"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.71a1 1 0 011.42 0l8.58 8.59a1 1 0 010 1.42l-8.58 8.59a1 1 0 01-1.42 0l-8.58-8.59a1 1 0 010-1.42l8.58-8.59z" />
-            <line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round" />
-            <circle cx="12" cy="16" r="0.5" fill="currentColor" />
-          </svg>
-        </button>
+      <!-- Report Icon -->
+      <button
+        class="text-white hover:text-yellow-400 transition"
+        @click="reportBookmark"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.71a1 1 0 011.42 0l8.58 8.59a1 1 0 010 1.42l-8.58 8.59a1 1 0 01-1.42 0l-8.58-8.59a1 1 0 010-1.42l8.58-8.59z" />
+          <line x1="12" y1="8" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="12" cy="16" r="0.5" fill="currentColor" />
+        </svg>
+      </button>
 
-        <!-- View Users Icon -->
-        <button
-          class="text-white hover:text-blue-400 transition"
-          @click="showUsersModal = true"
-          :disabled="!bookmark?.video?.id"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4a4 4 0 110 8 4 4 0 010-8zm0 10c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/>
-          </svg>
-        </button>
-      </div>
+      <!-- View Users Icon -->
+      <button
+        class="text-white hover:text-blue-400 transition"
+        @click="showUsersModal = true"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4a4 4 0 110 8 4 4 0 010-8zm0 10c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/>
+        </svg>
+      </button>
     </div>
 
     <!-- Title -->
-    <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-2 break-words dark:text-gray-200">
-      {{ bookmark.title || bookmark.video?.title || bookmark.description || 'Untitled' }}
-    </h1>
+    <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-2 break-words dark:text-gray-200">{{ bookmark.title }}</h1>
 
     <!-- Metadata -->
     <div class="flex flex-wrap items-center text-xs text-gray-600 gap-x-3 gap-y-1 mb-4 dark:text-gray-400">
@@ -222,9 +208,6 @@
           <option v-for="chan in channels" :key="chan.id" :value="chan.id">{{ chan.name }}</option>
         </select>
       </div>
-      <div class="mb-4">
-        <!-- Title input removed; backend will copy info -->
-      </div>
       <div v-if="collectError" class="text-red-600 text-sm mb-2">{{ collectError }}</div>
       <button
         type="submit"
@@ -259,42 +242,10 @@
       </li>
     </ul>
   </BaseModal>
-
-  <!-- Report Modal -->
-  <BaseModal v-model="showReportModal">
-    <h2 class="text-lg font-semibold mb-4 text-gray-900">Report Video/Bookmark</h2>
-    <form @submit.prevent="handleReport">
-      <div class="mb-4">
-        <label class="block mb-1 text-sm font-medium text-gray-700">Reason</label>
-        <select v-model="reportType" class="w-full px-3 py-2 border rounded">
-          <option disabled value="">Select a reason</option>
-          <option value="broken_source">Broken Source</option>
-          <option value="broken_thumbnail">Broken Thumbnail</option>
-          <option value="broken_embed">Broken Embed</option>
-          <option value="wrong_orientation">Wrong Orientation</option>
-          <option value="request_moderation">Request Moderation</option>
-        </select>
-      </div>
-      <div class="mb-4">
-        <label class="block mb-1 text-sm font-medium text-gray-700">Notes (optional)</label>
-        <textarea v-model="reportNotes" class="w-full px-3 py-2 border rounded" rows="3"></textarea>
-      </div>
-      <div v-if="reportError" class="text-red-600 text-sm mb-2">{{ reportError }}</div>
-      <div v-if="reportSuccess" class="text-green-600 text-sm mb-2">{{ reportSuccess }}</div>
-      <button
-        type="submit"
-        class="w-full px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-        :disabled="reportLoading || reportSubmitted"
-      >
-        <span v-if="reportLoading">Reporting...</span>
-        <span v-else>Submit Report</span>
-      </button>
-    </form>
-  </BaseModal>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchBookmarkDetail } from '@/api/index.js'
 import axios from 'axios'
@@ -316,26 +267,18 @@ async function fetchBookmark() {
     const data = await fetchBookmarkDetail(id.value)
     bookmark.value = data
 
-    // Only fetch additional data if user is logged in and video data exists
+    // Fetch "liked" status only if the user is logged in
     const access = localStorage.getItem('access')
-    if (access && bookmark.value?.video?.id) {
-      // Batch these requests to run in parallel
-      const [likeResponse, userResponse] = await Promise.all([
-        axios.get(`/api/videos/${bookmark.value.video.id}/like-status/`, {
-          headers: { Authorization: `Bearer ${access}` }
-        }),
-        (() => {
-          const username = localStorage.getItem('username')
-          return username ? axios.get(`/api/profile/${username}/`, {
-            headers: { Authorization: `Bearer ${access}` }
-          }) : Promise.resolve(null)
-        })()
-      ])
-      
-      isLiked.value = likeResponse.data.is_liked
-      if (userResponse) {
-        currentUserId.value = userResponse.data.user_id
-      }
+    if (access) {
+      const response = await axios.get(`/api/videos/${bookmark.value.video.id}/like-status/`, {
+        headers: { Authorization: `Bearer ${access}` }
+      })
+      isLiked.value = response.data.is_liked
+
+      const userRes = await axios.get('/api/profile/me/', {
+        headers: { Authorization: `Bearer ${access}` }
+      })
+      currentUserId.value = userRes.data.id
     }
   } catch (err) {
     error.value = err?.response?.data || { message: 'Failed to load bookmark details.' }
@@ -344,7 +287,9 @@ async function fetchBookmark() {
   }
 }
 
-
+onMounted(() => {
+  fetchBookmark()
+})
 
 const showCollectModal = ref(false)
 const collections = ref([])
@@ -353,24 +298,11 @@ const selectedCollection = ref('')
 const selectedChannel = ref('')
 const collectLoading = ref(false)
 const collectError = ref('')
-const collectTitle = ref('')
 
 const showUsersModal = ref(false)
 const users = ref([])
 const usersLoading = ref(false)
 const usersError = ref(null)
-
-const showReportModal = ref(false)
-const reportType = ref('')
-const reportNotes = ref('')
-const reportLoading = ref(false)
-const reportError = ref('')
-const reportSuccess = ref('')
-const reportSubmitted = ref(false)
-
-// Cache collections and channels data
-const cachedCollections = ref([])
-const cachedChannels = ref({}) // keyed by collection ID
 
 watch(showCollectModal, async (open) => {
   if (open) {
@@ -378,20 +310,14 @@ watch(showCollectModal, async (open) => {
     selectedCollection.value = ''
     selectedChannel.value = ''
     channels.value = []
-    collectTitle.value = bookmark.value?.title || ''
-    
-    // Use cached collections if available
-    if (cachedCollections.value.length === 0) {
-      try {
-        const res = await axios.get('/api/collections/', {
-          headers: getAuthHeaders()
-        })
-        cachedCollections.value = res.data
-      } catch {
-        cachedCollections.value = []
-      }
+    try {
+      const res = await axios.get('/api/collections/', {
+        headers: getAuthHeaders()
+      })
+      collections.value = res.data
+    } catch {
+      collections.value = []
     }
-    collections.value = cachedCollections.value
   }
 })
 
@@ -399,25 +325,19 @@ watch(selectedCollection, async (collectionId) => {
   selectedChannel.value = ''
   channels.value = []
   if (collectionId) {
-    // Use cached channels if available
-    if (cachedChannels.value[collectionId]) {
-      channels.value = cachedChannels.value[collectionId]
-    } else {
-      try {
-        const res = await axios.get(`/api/collections/${collectionId}/channels/`, {
-          headers: getAuthHeaders()
-        })
-        cachedChannels.value[collectionId] = res.data
-        channels.value = res.data
-      } catch {
-        channels.value = []
-      }
+    try {
+      const res = await axios.get(`/api/collections/${collectionId}/channels/`, {
+        headers: getAuthHeaders()
+      })
+      channels.value = res.data
+    } catch {
+      channels.value = []
     }
   }
 })
 
 watch(showUsersModal, async (open) => {
-  if (open && bookmark.value?.video?.id) {
+  if (open) {
     usersLoading.value = true
     usersError.value = null
     try {
@@ -439,98 +359,31 @@ async function handleCollect() {
     collectError.value = 'Please select a collection.'
     return
   }
-  // If this is a collect (copy) action, use the collect endpoint
-  const payload = {
-    bookmark: bookmark.value.id,
-    collection: selectedCollection.value,
-    channel: selectedChannel.value || null,
-  }
   collectLoading.value = true
   try {
-    await axios.post('/api/bookmarks/collect/', payload, {
+    await axios.post('/api/bookmarks/create/', {
+      video: bookmark.value.video.id,
+      collection: selectedCollection.value,
+      channel: selectedChannel.value || null,
+      title: bookmark.value.title,
+      description: bookmark.value.description,
+      tags: bookmark.value.tags?.map(t => t.name || t) || [],
+    }, {
       headers: getAuthHeaders()
     })
     showCollectModal.value = false
   } catch (e) {
-    if (e?.response?.data) {
-      collectError.value = Object.values(e.response.data).flat().join(' ')
-    } else {
-      collectError.value = 'Failed to add bookmark.'
-    }
+    collectError.value = e?.response?.data?.detail || 'Failed to add bookmark.'
   } finally {
     collectLoading.value = false
   }
 }
 
-watch(showReportModal, (open) => {
-  if (open) {
-    reportType.value = ''
-    reportNotes.value = ''
-    reportError.value = ''
-    reportSuccess.value = ''
-    reportSubmitted.value = false
-  }
-})
-
-async function handleReport() {
-  reportError.value = ''
-  reportSuccess.value = ''
-  if (!reportType.value) {
-    reportError.value = 'Please select a reason.'
-    return
-  }
-  if (!bookmark.value?.video?.id) {
-    reportError.value = 'Video information not available.'
-    return
-  }
-  reportLoading.value = true
-  try {
-    await axios.post('/api/report/', {
-      video_id: bookmark.value.video.id,
-      bookmark_id: bookmark.value.id,
-      report_type: reportType.value,
-      notes: reportNotes.value,
-    }, {
-      headers: getAuthHeaders()
-    })
-    reportSuccess.value = 'Report submitted. This video is now hidden pending admin review.'
-    reportSubmitted.value = true
-    showReportModal.value = false
-  } catch (e) {
-    reportError.value = e?.response?.data?.error || 'Failed to submit report.'
-  } finally {
-    reportLoading.value = false
-  }
-}
-
 const videoHost = computed(() => {
-  if (!bookmark.value?.video?.source_url) return null
   try {
-    return new URL(bookmark.value.video.source_url).hostname.replace('www.', '')
+    return new URL(bookmark.value?.video?.source_url || '').hostname.replace('www.', '')
   } catch {
     return null
-  }
-})
-
-// Cache user data to avoid repeated API calls
-const cachedUserData = ref(null)
-
-onMounted(async () => {
-  await fetchBookmark()
-  
-  // Cache user data on first load
-  const access = localStorage.getItem('access')
-  const username = localStorage.getItem('username')
-  if (access && username && !cachedUserData.value) {
-    try {
-      const userRes = await axios.get(`/api/profile/${username}/`, {
-        headers: { Authorization: `Bearer ${access}` }
-      })
-      cachedUserData.value = userRes.data
-      currentUserId.value = userRes.data.user_id
-    } catch (err) {
-      console.warn('Failed to load user data:', err)
-    }
   }
 })
 
@@ -560,59 +413,19 @@ function getOrientationLabel(orientation) {
 }
 
 async function toggleLike() {
-  if (!bookmark.value?.video?.id) return
-  
-  const originalLiked = isLiked.value
-  // Optimistically update UI
-  isLiked.value = !isLiked.value
-  
   try {
     const access = localStorage.getItem('access')
-    if (!access) {
-      isLiked.value = originalLiked // revert on auth failure
-      return
-    }
-    
     await axios.post(
       `/api/videos/${bookmark.value.video.id}/like/`,
       {},
       { headers: { Authorization: `Bearer ${access}` } }
     )
-    // Note: We're using optimistic UI updates, so we don't fetch the status again
-    // If the request succeeds, our optimistic update was correct
-  } catch (err) {
-    // Revert optimistic update on error
-    isLiked.value = originalLiked
-    console.error('Failed to toggle like:', err)
-  }
-}
-
-// Follow/Unfollow functionality with optimistic updates
-async function toggleFollow(userId) {
-  const userIndex = users.value.findIndex(u => u.id === userId)
-  if (userIndex === -1) return
-  
-  const user = users.value[userIndex]
-  const originalFollowState = user.is_followed
-  
-  // Optimistically update UI
-  user.is_followed = !user.is_followed
-  
-  try {
-    const access = localStorage.getItem('access')
-    if (!access) {
-      user.is_followed = originalFollowState // revert on auth failure
-      return
-    }
-    
-    const endpoint = originalFollowState ? 'unfollow' : 'follow'
-    await axios.post(`/api/users/${userId}/${endpoint}/`, {}, {
-      headers: { Authorization: `Bearer ${access}` }
+    const response = await axios.get(`/api/videos/${bookmark.value.video.id}/like-status/`, {
+      headers: getAuthHeaders()
     })
+    isLiked.value = response.data.is_liked // Update "liked" status after toggling
   } catch (err) {
-    // Revert optimistic update on error
-    user.is_followed = originalFollowState
-    console.error('Failed to toggle follow:', err)
+    console.error('Failed to toggle like:', err)
   }
 }
 
