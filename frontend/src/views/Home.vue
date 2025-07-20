@@ -1,13 +1,13 @@
 <template>
   <div class="container mx-auto px-4 py-6">
     <div class="flex-grow">
-      <h1 class="text-2xl font-semibold mb-1 text-gray-800 dark:text-gray-200">Explore Bookmarks</h1>
-      <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+      <h1 class="text-2xl font-semibold mb-1 text-text-main">Explore Bookmarks</h1>
+      <div class="mb-4 text-sm text-text-secondary">
         Page {{ currentPage }} of {{ totalPages }} ({{ totalCount }} results)
       </div>
       <!-- Filter + Sort controls -->
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="border-b border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="border-b border-gray-700 overflow-hidden">
           <nav class="-mb-px flex space-x-4 sm:space-x-6 overflow-x-auto pb-px" aria-label="Sort Tabs">
             <button
               v-for="tab in homeSortTabs"
@@ -15,8 +15,8 @@
               @click="currentSort = tab.id"
               :class="[
                 currentSort === tab.id
-                  ? 'border-indigo-500 text-indigo-600 dark:border-indigo-400 dark:text-indigo-300'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600',
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-text-secondary hover:text-text-main hover:border-gray-600',
                 'whitespace-nowrap py-3 px-1 sm:px-2 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-150 ease-in-out'
               ]"
             >
@@ -25,8 +25,8 @@
           </nav>
         </div>
         <div class="flex flex-wrap gap-2 w-full sm:w-auto items-center">
-          <div class="flex items-center gap-1 flex-shrink-0 py-1 px-1 rounded-md bg-gray-50 dark:bg-gray-800 w-full sm:w-auto">
-            <span class="text-sm font-medium text-gray-600 dark:text-gray-400 hidden sm:inline pl-2">Filter:</span>
+          <div class="flex items-center gap-1 flex-shrink-0 py-1 px-1 rounded-md bg-surface w-full sm:w-auto">
+            <span class="text-sm font-medium text-text-secondary hidden sm:inline pl-2">Filter:</span>
             <OrientationFilter />
           </div>
         </div>

@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+# Download NLTK data
+RUN python -m nltk.downloader punkt stopwords averaged_perceptron_tagger
+
 COPY . /app/
 
 CMD ["uvicorn", "api.asgi:application", "--host", "0.0.0.0", "--port", "8000"]

@@ -10,7 +10,7 @@ from users.views import (
     BookmarkCreateAPIView,
     MyProfileView,ToggleFollowView,
 )
-from videos.views import ManualBookmarkCreateView, VideoLikeToggleView,UsersWhoBookmarkedView, VideoLikeStatusView
+from videos.views import ManualBookmarkCreateView, VideoLikeToggleView,UsersWhoBookmarkedView, VideoLikeStatusView, URLMetadataScraperView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/bookmarks/<int:id>/', BookmarkDetailAPIView.as_view(), name='bookmark-detail'),
     path('api/bookmarks/create/', BookmarkCreateAPIView.as_view(), name='bookmark-create'),
     path('api/bookmarks/manual-create/', ManualBookmarkCreateView.as_view(), name='manual-bookmark-create'),
+    path('api/scrape-metadata/', URLMetadataScraperView.as_view(), name='scrape-metadata'),
 
     path('api/collections/', MyCollectionsListView.as_view(), name='my-collections'),
     path('api/collections/<int:collection_id>/channels/', CollectionChannelsListView.as_view(), name='collection-channels'),
@@ -38,4 +39,3 @@ urlpatterns = [
     path('api/users/<int:user_id>/toggle-follow/', ToggleFollowView.as_view(), name='toggle-follow'),
 
 ]
-

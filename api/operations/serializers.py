@@ -40,6 +40,7 @@ class HomePageBookmarkSerializer(serializers.ModelSerializer):
     collection_name = serializers.CharField(source='video.collection.name', read_only=True)
     description = serializers.CharField(read_only=True)
     orientation = serializers.CharField(source='video.orientation', read_only=True)
+    player_type = serializers.CharField(source='video.player_type', read_only=True)
     likes_count = serializers.IntegerField(source='video.likes_count', read_only=True)
     tags = serializers.SlugRelatedField(many=True, read_only=True, slug_field='name')
 
@@ -56,6 +57,7 @@ class HomePageBookmarkSerializer(serializers.ModelSerializer):
             'collection_name',
             'description',
             'orientation',
+            'player_type',
             'likes_count',
             'tags',
         ]
@@ -74,7 +76,7 @@ class VideoDetailSerializer(serializers.ModelSerializer):
         model = Video
         fields = [
             'id', 'title', 'embed_url', 'thumbnail_url', 'source_url',
-            'orientation', 'likes_count'
+            'orientation', 'player_type', 'likes_count'
         ]
 
 class BookmarkDetailSerializer(serializers.ModelSerializer):
@@ -93,4 +95,3 @@ class BookmarkDetailSerializer(serializers.ModelSerializer):
             'channel_name', 'collection_name', 'orientation', 'likes_count',
             'tags', 'video'
         ]
-

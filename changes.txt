@@ -1,7 +1,0 @@
-# Change Log
-
-## 2025-07-10
-
-- Refactored `ToggleFollowView` in `api/users/views.py` to use a more efficient approach for checking and toggling the follow relationship. This should reduce the number of database connections.
-- Optimized `BookmarkListAPIView` in `api/operations/views.py` to improve query efficiency for filtering bookmarks.
-- Implemented lazy loading for video thumbnails in `frontend/src/components/BookmarkGrid.vue` to improve initial page load time.

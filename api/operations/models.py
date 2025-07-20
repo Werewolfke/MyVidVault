@@ -3,6 +3,11 @@ from django.conf import settings
 from users.models import Bookmark
 
 # Choices
+PLAYER_CHOICES = [
+    ('direct', 'Direct Player'),
+    ('iframe', 'Iframe Player'),
+]
+
 ORIENTATION_CHOICES = [
     ('straight', 'Straight'),
     ('gay', 'Gay'),
@@ -36,6 +41,12 @@ class Video(models.Model):
     title = models.CharField(max_length=300)
     thumbnail_url = models.URLField(max_length=500, blank=True, null=True)
     embed_url = models.URLField(max_length=500, blank=True, null=True)
+    player_type = models.CharField(
+        max_length=10,
+        choices=PLAYER_CHOICES,
+        default='direct',
+        help_text="The preferred player type for this video (direct link or iframe)."
+    )
     orientation = models.CharField(
         max_length=10,
         choices=ORIENTATION_CHOICES,
